@@ -47,6 +47,34 @@ export interface Song {
   imageUrl?: string;
 }
 
+// Suno API response types
+export interface SunoClip {
+  id: string;
+  title: string;
+  audio_url?: string;
+  image_url?: string;
+  image_large_url?: string;
+  video_url?: string;
+  status?: string;
+  metadata?: {
+    tags?: string;
+    prompt?: string;
+    gpt_description_prompt?: string;
+    [key: string]: any;
+  };
+  created_at?: string;
+  duration?: number;
+  [key: string]: any;
+}
+
+export interface SunoProfile {
+  id?: string;
+  username?: string;
+  display_name?: string;
+  clips?: SunoClip[];
+  [key: string]: any;
+}
+
 declare global {
   interface Window {
     SpeechRecognition: {

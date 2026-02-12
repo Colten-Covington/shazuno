@@ -1,6 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
+import type { SunoProfile, SunoClip } from '@/types/speech';
 
-// Mock database of Suno songs for demonstration
+// Function to fetch songs from Suno API
+async function fetchSunoSongs(username: string): Promise<SunoClip[]> {
+  try {
+    const url = `https://studio-api.prod.suno.com/api/profiles/${username}?clips_sort_by=created_at&playlists_sort_by=created_at`;
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      console.error(`Suno API error: ${response.status} ${response.statusText}`);
+      return [];
+    }
+
+    const data: SunoProfile = await response.json();
+    
+    // Return the clips array, limit to 30 most recent
+    return (data.clips || []).slice(0, 30);
+  } catch (error) {
+    console.error('Error fetching from Suno API:', error);
+    return [];
+  }
+}
+
+// Mock database of Suno songs for demonstration (fallback only)
 // In production, this would connect to Suno's API or a database
 const mockSunoSongs: Record<string, Array<{
   id: string;
@@ -150,13 +177,35 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get songs for the specified user
-    const userSongs = mockSunoSongs[username.toLowerCase()] || [];
+    // Try to fetch from real Suno API
+    const sunoClips = await fetchSunoSongs(username.toLowerCase());
+    
+    let userSongs: Array<{
+      id: string;
+      title: string;
+      lyrics: string;
+      audioUrl?: string;
+      imageUrl?: string;
+    }> = [];
+
+    if (sunoClips.length > 0) {
+      // Convert Suno clips to our song format
+      userSongs = sunoClips.map((clip) => ({
+        id: clip.id,
+        title: clip.title || 'Untitled',
+        lyrics: clip.metadata?.gpt_description_prompt || clip.metadata?.prompt || '',
+        audioUrl: clip.audio_url,
+        imageUrl: clip.image_large_url || clip.image_url,
+      }));
+    } else {
+      // Fall back to mock data if API fetch fails or returns no results
+      userSongs = mockSunoSongs[username.toLowerCase()] || [];
+    }
 
     if (userSongs.length === 0) {
       return NextResponse.json({
         results: [],
-        message: `No songs found for user "${username}". Try "demo-user" or "test-artist" for demo.`,
+        message: `No songs found for user "${username}". Try "demo-user" or "test-artist" for demo, or check if the username is correct.`,
       });
     }
 

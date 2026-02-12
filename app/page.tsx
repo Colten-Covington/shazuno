@@ -8,7 +8,7 @@ import type { Song } from '@/types/speech';
 
 export default function Home() {
   const [searchMode, setSearchMode] = useState<'microphone' | 'text'>('text');
-  const [sunoUsername, setSunoUsername] = useState('');
+  const [sunoUsername, setSunoUsername] = useState('beginbot');
   const [searchResults, setSearchResults] = useState<Song[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
