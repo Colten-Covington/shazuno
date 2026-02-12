@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import type { SpeechRecognition, SpeechRecognitionEvent, SpeechRecognitionErrorEvent } from '@/types/speech';
 
 interface AudioRecorderProps {
   onSearch: (lyrics: string) => void;
@@ -11,7 +12,7 @@ export default function AudioRecorder({ onSearch, isSearching }: AudioRecorderPr
   const [isRecording, setIsRecording] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [error, setError] = useState('');
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
 
   useEffect(() => {
     // Check if browser supports speech recognition
@@ -24,7 +25,7 @@ export default function AudioRecorder({ onSearch, isSearching }: AudioRecorderPr
         recognition.interimResults = true;
         recognition.lang = 'en-US';
 
-        recognition.onresult = (event: any) => {
+        recognition.onresult = (event: SpeechRecognitionEvent) => {
           let interimTranscript = '';
           let finalTranscript = '';
 
@@ -40,7 +41,7 @@ export default function AudioRecorder({ onSearch, isSearching }: AudioRecorderPr
           setTranscript(finalTranscript || interimTranscript);
         };
 
-        recognition.onerror = (event: any) => {
+        recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
           console.error('Speech recognition error:', event.error);
           setError(`Error: ${event.error}`);
           setIsRecording(false);

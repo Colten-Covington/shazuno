@@ -4,11 +4,12 @@ import { useState } from 'react';
 import AudioRecorder from '@/components/AudioRecorder';
 import TextSearch from '@/components/TextSearch';
 import SongResults from '@/components/SongResults';
+import type { Song } from '@/types/speech';
 
 export default function Home() {
   const [searchMode, setSearchMode] = useState<'microphone' | 'text'>('text');
   const [sunoUsername, setSunoUsername] = useState('');
-  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searchResults, setSearchResults] = useState<Song[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
   const handleSearch = async (query: string) => {

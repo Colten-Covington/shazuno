@@ -1,15 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-
-interface Song {
-  id: string;
-  title: string;
-  lyrics: string;
-  matchScore: number;
-  audioUrl?: string;
-  imageUrl?: string;
-}
+import type { Song } from '@/types/speech';
 
 interface SongResultsProps {
   results: Song[];
