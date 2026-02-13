@@ -431,11 +431,53 @@ When making significant changes:
 
 ## Self-Improvement for AI Agents 🤖
 
-**Every completed task is an opportunity to improve documentation for future work.**
+### **MANDATORY After Every Task** ⚠️
 
-### After Completing Any Task
+Self-improvement is **NOT OPTIONAL** and should **NOT require prompting**. It is part of completing the task.
 
-Take 5 minutes to self-improve:
+**Every completed task includes:**
+
+1. **Verification** (do this FIRST!)
+   ```bash
+   git status          # Verify changes exist
+   git diff            # Review actual changes
+   ls -la file.tsx     # Confirm new files exist
+   pnpm build          # Ensure no errors
+   ```
+
+2. **Analysis** - What changed and why?
+
+3. **Documentation** - Update AGENTS.md with real examples
+
+4. **Improvement** - Make it easier for the next agent
+
+### Critical Failure Patterns to Avoid
+
+🚫 **Failure Pattern 1: Writing summaries without verification**
+- Problem: Claiming changes were made without checking `git status`
+- Prevention: ALWAYS verify with git before any summary
+
+🚫 **Failure Pattern 2: Forgetting self-improvement**
+- Problem: Completing task but not updating documentation
+- Prevention: Self-improvement is automatic, not prompted
+
+🚫 **Failure Pattern 3: Hypothetical examples**
+- Problem: Using made-up code instead of real examples
+- Prevention: Only reference actual files in the codebase
+
+### Verification Checklist
+
+Before claiming task completion:
+```markdown
+- [ ] Run `git status` - verify changes exist
+- [ ] Run `git diff` - review actual changes
+- [ ] Verify new files exist with `ls -la`
+- [ ] Build passes - no errors introduced
+- [ ] Self-improvement done - docs updated with real examples
+- [ ] Commit message matches actual changes
+```
+
+### After-Task Self-Improvement Protocol
 
 1. **Analyze What You Did**
    - What files changed and why?
@@ -446,7 +488,7 @@ Take 5 minutes to self-improve:
    - Add to relevant AGENTS.md (root or directory)
    - Update architecture docs if needed
    - Document patterns in DESIGN_PATTERNS.md
-   - Add anti-patterns warnings
+   - Add anti-pattern warnings
 
 3. **Use Real Examples**
    - Reference actual files from your changes

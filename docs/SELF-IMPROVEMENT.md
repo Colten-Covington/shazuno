@@ -26,6 +26,17 @@ Proactive self-improvement:
 
 ## When to Self-Improve
 
+### **MANDATORY: After EVERY Task** ⚠️
+
+Self-improvement is **NOT OPTIONAL**. After completing ANY task:
+
+1. ✅ **Verify changes** (git status, git diff)
+2. ✅ **Update documentation** (minimum: one AGENTS.md file)
+3. ✅ **Add real examples** (from actual code changes)
+4. ✅ **Document learnings** (patterns, anti-patterns)
+
+**Do not wait to be prompted. This is automatic.**
+
 ### Always After:
 - Completing a feature or refactoring
 - Fixing a bug (document the root cause)
@@ -42,10 +53,30 @@ Proactive self-improvement:
 
 ## The Self-Improvement Process
 
+### Step 0: **VERIFY CHANGES ACTUALLY EXIST** ⚠️
+
+**CRITICAL: Do this BEFORE writing any summaries or commit messages!**
+
+```bash
+# 1. Check what actually changed
+git status
+
+# 2. Review the actual diff
+git diff
+
+# 3. For new files, verify they exist
+ls -la path/to/new/file
+
+# 4. Run build to ensure no errors
+pnpm build
+```
+
+**Never write commit messages or summaries before verifying changes exist!**
+
 ### Step 1: Analyze What Was Done
 
 Ask yourself:
-- **What changed?** List files modified and why
+- **What changed?** List files modified and why (based on git diff!)
 - **What was the problem?** Root cause, not just symptoms
 - **What was the solution?** High-level approach
 - **What alternatives were considered?** Why this approach won
@@ -418,15 +449,69 @@ Documentation is never "done":
 **Impact:** Information silos, hard to discover
 **Solution:** Link related documentation together
 
+### ❌ Planning Without Implementation
+**Problem:** Writing detailed plans and summaries without making actual changes
+**Impact:** False progress reports, misleading commit messages, wasted time
+**Solution:** Always run `git status` and `git diff` BEFORE writing summaries
+
+### ❌ Unverified Examples
+**Problem:** Code examples that don't work or files that don't exist
+**Impact:** Loss of trust, wasted debugging time
+**Solution:** Test all code examples, verify files exist
+
 ### ❌ No Anti-Patterns
 **Problem:** Only showing the "right way"
 **Impact:** Agents repeat mistakes without warnings
 **Solution:** Document what NOT to do and why
 
-### ❌ Unverified Examples
-**Problem:** Code examples that don't work
-**Impact:** Loss of trust, wasted debugging time
-**Solution:** Test all code examples
+### ❌ Orphaned Documentation
+**Problem:** Documentation not linked from anywhere
+**Impact:** Nobody finds or uses it
+**Solution:** Link related documentation together
+
+## Common Agent Failure Patterns
+
+### 🚫 Failure Pattern 1: Writing Summaries Without Verification
+
+**What happens:**
+1. Agent makes a plan to create files
+2. Agent writes detailed summary claiming files were created
+3. Agent writes commit message describing changes
+4. BUT: No actual code changes were made (git status shows clean)
+
+**Prevention:**
+```bash
+# ALWAYS do this before claiming completion:
+git status          # Check if changes exist
+git diff            # Review actual changes
+ls -la file.tsx     # Verify new files exist
+pnpm build          # Ensure no errors
+```
+
+### 🚫 Failure Pattern 2: Forgetting Self-Improvement
+
+**What happens:**
+1. Agent completes a task successfully
+2. Agent commits code changes
+3. Agent forgets to update documentation
+4. Learnings are lost, patterns not documented
+
+**Prevention:**
+- Self-improvement is MANDATORY after every task
+- Not optional, not prompted
+- Minimum: update one AGENTS.md file with real example
+
+### 🚫 Failure Pattern 3: Using Hypothetical Examples
+
+**What happens:**
+1. Agent writes documentation with made-up examples
+2. Examples don't match actual codebase
+3. Future agents get confused
+
+**Prevention:**
+- Only use REAL code from the actual codebase
+- Reference specific files and line numbers
+- Test that examples actually work
 
 ## Quick Reference
 

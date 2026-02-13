@@ -278,6 +278,64 @@ pnpm audit
 
 # Update dependencies
 pnpm update
+```
+
+## Self-Improvement Protocol 🔄
+
+### **MANDATORY: After Every Task**
+
+Self-improvement is **NOT OPTIONAL** and should **NOT require prompting**.
+
+**After completing ANY task:**
+
+1. ✅ **Verify changes exist** - Run `git status` and `git diff`
+2. ✅ **Update documentation** - Minimum: one AGENTS.md file  
+3. ✅ **Add real examples** - From actual code changes
+4. ✅ **Document learnings** - Patterns and anti-patterns
+
+**Critical Reminder:** Never write commit messages or summaries before verifying changes with `git status`.
+
+### Quick Self-Improvement Checklist
+
+```markdown
+- [ ] Ran `git status` - verified changes exist
+- [ ] Ran `git diff` - reviewed actual changes
+- [ ] Updated relevant AGENTS.md file(s)
+- [ ] Added real code examples from codebase
+- [ ] Documented any patterns discovered
+- [ ] Documented any anti-patterns avoided
+- [ ] Build passes successfully
+```
+
+### See Full Protocol
+
+For comprehensive guidance: [docs/SELF-IMPROVEMENT.md](docs/SELF-IMPROVEMENT.md)
+
+**Key sections:**
+- Verification Protocol (Step 0 - do this FIRST!)
+- Common Failure Patterns (learn from past mistakes)
+- Post-Task Reflection Template
+- Documentation Quality Checklist
+
+## Critical Reminders ⚠️
+
+### Verification First
+- **ALWAYS** run `git status` before claiming completion
+- **ALWAYS** run `git diff` before writing commit messages
+- **ALWAYS** verify new files exist before claiming creation
+- **NEVER** write summaries for changes that don't exist
+
+### Self-Improvement Always
+- **EVERY task** ends with self-improvement
+- **NOT OPTIONAL** - it's part of completing the task
+- **MINIMUM**: Update one AGENTS.md + one real example
+- **AUTOMATIC** - don't wait to be prompted
+
+### Real Examples Only
+- Only use code that actually exists in the codebase
+- Reference specific files and line numbers
+- Test that all examples work
+- No hypothetical or made-up examples
 
 # Project uses pnpm@9.0.0 - specified in package.json
 ```
