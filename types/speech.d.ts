@@ -45,6 +45,7 @@ export interface Song {
   matchScore: number;
   audioUrl?: string;
   imageUrl?: string;
+  tags?: string;
 }
 
 // Suno API response types

@@ -5,14 +5,15 @@ import { useState } from 'react';
 interface TextSearchProps {
   onSearch: (lyrics: string) => void;
   isSearching: boolean;
+  songsLoaded: number;
 }
 
-export default function TextSearch({ onSearch, isSearching }: TextSearchProps) {
+export default function TextSearch({ onSearch, isSearching, songsLoaded }: TextSearchProps) {
   const [lyrics, setLyrics] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (lyrics.trim()) {
+    if (lyrics.trim() && songsLoaded > 0) {
       onSearch(lyrics.trim());
     }
   };
@@ -26,14 +27,15 @@ export default function TextSearch({ onSearch, isSearching }: TextSearchProps) {
         <textarea
           value={lyrics}
           onChange={(e) => setLyrics(e.target.value)}
-          placeholder="Type or paste song lyrics here..."
+          disabled={songsLoaded === 0}
+          placeholder={songsLoaded === 0 ? "Loading songs..." : "Type or paste song lyrics here..."}
           rows={6}
-          className="w-full px-4 py-3 rounded-lg bg-white/20 text-white placeholder-gray-400 border border-white/30 focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
+          className="w-full px-4 py-3 rounded-lg bg-white/20 text-white placeholder-gray-400 border border-white/30 focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none disabled:opacity-50 disabled:cursor-not-allowed"
         />
       </div>
       <button
         type="submit"
-        disabled={!lyrics.trim() || isSearching}
+        disabled={!lyrics.trim() || isSearching || songsLoaded === 0}
         className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 px-4 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
       >
         {isSearching ? (
@@ -44,6 +46,8 @@ export default function TextSearch({ onSearch, isSearching }: TextSearchProps) {
             </svg>
             Searching...
           </span>
+        ) : songsLoaded === 0 ? (
+          '⏳ Loading songs...'
         ) : (
           '🔍 Search Songs'
         )}

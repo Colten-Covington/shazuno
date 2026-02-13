@@ -1,44 +1,144 @@
 'use client';
 
-import { useState } from 'react';
-import AudioRecorder from '@/components/AudioRecorder';
+import { useState, useEffect } from 'react';
 import TextSearch from '@/components/TextSearch';
 import SongResults from '@/components/SongResults';
+import { calculateSimilarity } from '@/utils/similarity';
 import type { Song } from '@/types/speech';
 
 export default function Home() {
-  const [searchMode, setSearchMode] = useState<'microphone' | 'text'>('text');
   const [sunoUsername, setSunoUsername] = useState('beginbot');
+  const [allSongs, setAllSongs] = useState<Song[]>([]);
   const [searchResults, setSearchResults] = useState<Song[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [isLoadingSongs, setIsLoadingSongs] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const fetchSunoPage = async (username: string, page: number) => {
+    const url = `https://studio-api.prod.suno.com/api/profiles/${username}?clips_sort_by=created_at&playlists_sort_by=created_at&page=${page}`;
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
 
-  const handleSearch = async (query: string) => {
-    if (!sunoUsername.trim()) {
-      alert('Please enter a Suno username to search');
+    if (!response.ok) {
+      return null;
+    }
+
+    return response.json();
+  };
+
+  const calculateResults = (query: string, songs: Song[]) => {
+    if (!query.trim() || songs.length === 0) {
+      return [] as Song[];
+    }
+
+    const scoredSongs = songs.map((song) => ({
+      ...song,
+      matchScore: calculateSimilarity(song.lyrics, query),
+    }));
+
+    return scoredSongs
+      .filter((song) => song.matchScore > 0)
+      .sort((a, b) => b.matchScore - a.matchScore)
+      .slice(0, 10);
+  };
+
+  // Load all songs from Suno API when username changes
+  useEffect(() => {
+    const loadSongs = async () => {
+      if (!sunoUsername.trim()) {
+        setAllSongs([]);
+        setSearchResults([]);
+        setSearchQuery('');
+        return;
+      }
+
+      setIsLoadingSongs(true);
+      try {
+        const normalizedUsername = sunoUsername.trim().toLowerCase();
+        let page = 0;
+        let emptyPages = 0;
+        let clips: Song[] = [];
+        const seenIds = new Set<string>();
+
+        while (emptyPages < 10) {
+          const data = await fetchSunoPage(normalizedUsername, page);
+
+          if (!data || !Object.prototype.hasOwnProperty.call(data, 'clips')) {
+            emptyPages += 1;
+            page += 1;
+            continue;
+          }
+
+          const pageClips = Array.isArray(data.clips) ? data.clips : [];
+
+          if (pageClips.length === 0) {
+            emptyPages += 1;
+            page += 1;
+            continue;
+          }
+
+          emptyPages = 0;
+          page += 1;
+
+          const mappedClips = pageClips
+            .map((clip: any) => ({
+              id: clip.id,
+              title: clip.title || 'Untitled',
+              lyrics: clip.metadata?.prompt || clip.metadata?.gpt_description_prompt || '',
+              audioUrl: clip.audio_url,
+              imageUrl: clip.image_large_url || clip.image_url,
+              tags: clip.metadata?.tags || '',
+              matchScore: 0,
+            }))
+            .filter((clip: Song) => {
+              if (!clip.id || seenIds.has(clip.id)) {
+                return false;
+              }
+
+              seenIds.add(clip.id);
+              return true;
+            });
+
+          clips = clips.concat(mappedClips);
+          setAllSongs([...clips]);
+        }
+
+        setAllSongs(clips);
+        if (searchQuery.trim()) {
+          setSearchResults(calculateResults(searchQuery, clips));
+        } else {
+          setSearchResults([]);
+        }
+      } catch (error) {
+        console.error('Error loading songs:', error);
+        alert('Error loading songs');
+      } finally {
+        setIsLoadingSongs(false);
+      }
+    };
+
+    // Debounce the load to avoid too many requests while typing
+    const timer = setTimeout(loadSongs, 500);
+    return () => clearTimeout(timer);
+  }, [sunoUsername]);
+
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setSearchResults([]);
       return;
     }
 
     setIsSearching(true);
-    try {
-      const response = await fetch('/api/search', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          query,
-          username: sunoUsername,
-        }),
-      });
+    const results = calculateResults(searchQuery, allSongs);
+    setSearchResults(results);
+    setIsSearching(false);
+  }, [allSongs, searchQuery]);
 
-      const data = await response.json();
-      setSearchResults(data.results || []);
-    } catch (error) {
-      console.error('Search error:', error);
-      alert('Error searching for songs');
-    } finally {
-      setIsSearching(false);
-    }
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
   };
 
   return (
@@ -66,38 +166,19 @@ export default function Home() {
               placeholder="Enter Suno.com username"
               className="w-full px-4 py-2 rounded-lg bg-white/20 text-white placeholder-gray-400 border border-white/30 focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
+            {isLoadingSongs && (
+              <p className="text-sm text-gray-400 mt-2">Loading songs...</p>
+            )}
+            {allSongs.length > 0 && !isLoadingSongs && (
+              <p className="text-sm text-green-400 mt-2">
+                ✓ Loaded {allSongs.length} song{allSongs.length !== 1 ? 's' : ''}
+              </p>
+            )}
           </div>
 
-          {/* Search Mode Toggle */}
+          {/* Search */}
           <div className="bg-white/10 backdrop-blur-lg rounded-lg p-6 mb-6 shadow-xl">
-            <div className="flex gap-4 mb-6">
-              <button
-                onClick={() => setSearchMode('text')}
-                className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all ${
-                  searchMode === 'text'
-                    ? 'bg-purple-600 text-white shadow-lg'
-                    : 'bg-white/20 text-gray-300 hover:bg-white/30'
-                }`}
-              >
-                📝 Text Search
-              </button>
-              <button
-                onClick={() => setSearchMode('microphone')}
-                className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all ${
-                  searchMode === 'microphone'
-                    ? 'bg-purple-600 text-white shadow-lg'
-                    : 'bg-white/20 text-gray-300 hover:bg-white/30'
-                }`}
-              >
-                🎤 Microphone
-              </button>
-            </div>
-
-            {searchMode === 'text' ? (
-              <TextSearch onSearch={handleSearch} isSearching={isSearching} />
-            ) : (
-              <AudioRecorder onSearch={handleSearch} isSearching={isSearching} />
-            )}
+            <TextSearch onSearch={handleSearch} isSearching={isSearching} songsLoaded={allSongs.length} />
           </div>
 
           {/* Results */}

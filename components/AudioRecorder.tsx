@@ -6,9 +6,10 @@ import type { SpeechRecognition, SpeechRecognitionEvent, SpeechRecognitionErrorE
 interface AudioRecorderProps {
   onSearch: (lyrics: string) => void;
   isSearching: boolean;
+  songsLoaded?: number;
 }
 
-export default function AudioRecorder({ onSearch, isSearching }: AudioRecorderProps) {
+export default function AudioRecorder({ onSearch, isSearching, songsLoaded = 0 }: AudioRecorderProps) {
   const [isRecording, setIsRecording] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [error, setError] = useState('');
@@ -102,7 +103,7 @@ export default function AudioRecorder({ onSearch, isSearching }: AudioRecorderPr
         ) : (
           <button
             onClick={startRecording}
-            disabled={isSearching || !!error}
+            disabled={isSearching || !!error || songsLoaded === 0}
             className="w-32 h-32 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold shadow-lg transform transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <div className="flex flex-col items-center">
@@ -139,7 +140,7 @@ export default function AudioRecorder({ onSearch, isSearching }: AudioRecorderPr
 
       {!error && !isRecording && !transcript && (
         <p className="text-center text-gray-300 text-sm">
-          Click the microphone to start recording lyrics
+          {songsLoaded === 0 ? 'Waiting for songs to load...' : 'Click the microphone to start recording lyrics'}
         </p>
       )}
     </div>

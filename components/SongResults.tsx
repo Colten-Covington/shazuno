@@ -45,6 +45,19 @@ export default function SongResults({ results }: SongResultsProps) {
                   <span className="text-gray-400">•</span>
                   <span className="text-sm text-gray-300">ID: {song.id}</span>
                 </div>
+
+                {song.tags && (
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {song.tags.split(',').map((tag, index) => (
+                      <span
+                        key={index}
+                        className="inline-block bg-purple-500/70 text-white text-xs px-2 py-1 rounded-full"
+                      >
+                        {tag.trim()}
+                      </span>
+                    ))}
+                  </div>
+                )}
                 
                 {song.lyrics && (
                   <div className="bg-black/30 rounded p-3 mt-2">
