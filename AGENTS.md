@@ -1,6 +1,6 @@
 # AGENTS.md
 
-This file provides instructions for AI coding agents working on the Shazuno project.
+This file provides instructions for AI coding agents working on projects built with the Buzz Stack boilerplate.
 
 ## Directory-Specific Guidance
 
@@ -10,7 +10,7 @@ Each major directory has its own AGENTS.md file with targeted instructions. The 
 |-----------|---------|-----------|
 | [/app](app/) | Next.js App Router pages & layouts | [app/AGENTS.md](app/AGENTS.md) |
 | [/components](components/) | Reusable React components | [components/AGENTS.md](components/AGENTS.md) |
-| [/lib](lib/) | Business logic & API clients | [lib/AGENTS.md](lib/AGENTS.md) |
+| [/lib](lib/) | External API clients & integrations | [lib/AGENTS.md](lib/AGENTS.md) |
 | [/utils](utils/) | Pure utility functions | [utils/AGENTS.md](utils/AGENTS.md) |
 | [/types](types/) | TypeScript type definitions | [types/AGENTS.md](types/AGENTS.md) |
 | [/hooks](hooks/) | Custom React hooks | [hooks/AGENTS.md](hooks/AGENTS.md) |
@@ -26,7 +26,7 @@ Each major directory has its own AGENTS.md file with targeted instructions. The 
 
 ## Project Overview
 
-**Shazuno** is a Shazam-like web application for searching songs from Suno.com using text or voice input.
+**Buzz Stack** is a modern Next.js boilerplate for building production-ready web applications with best practices baked in.
 
 **Tech Stack:**
 - Next.js 15 (App Router)
@@ -36,10 +36,11 @@ Each major directory has its own AGENTS.md file with targeted instructions. The 
 - pnpm 9.0.0
 
 **Key Features:**
-- Voice recognition using Web Speech API
-- Text-based search with smart matching
-- Real-time progressive loading from Suno API
-- WCAG 2.2 AA accessibility compliance
+- Server Components by default
+- Strict TypeScript for type safety
+- Accessibility (WCAG 2.2 AA) patterns
+- Well-organized architecture
+- Production-ready error handling
 
 ## Build and Test Commands
 
@@ -63,9 +64,15 @@ pnpm lint
 
 ### Testing
 ```bash
-# Currently no automated tests - manual testing required
-# Test checklist:
-# - Browser: Chrome, Edge, Safari (for voice features)
+# Add your tests here as you build features
+# Example test commands:
+# pnpm test              # Run all tests
+# pnpm test:unit         # Run unit tests
+# pnpm test:integration  # Run integration tests
+# pnpm test:e2e          # Run end-to-end tests
+
+# Manual testing checklist:
+# - Browser: Chrome, Firefox, Safari, Edge
 # - Keyboard navigation (Tab, Enter, Escape)
 # - Mobile viewport (responsive design)
 # - Screen reader (VoiceOver on macOS, NVDA on Windows)
@@ -75,13 +82,19 @@ pnpm lint
 
 ```
 /app              - Next.js App Router (pages and layouts)
-/components       - React components (AudioRecorder, TextSearch, SongResults)
-/lib              - Business logic (Suno API integration)
-/utils            - Utility functions (similarity algorithm)
+/components       - Reusable React components
+/lib              - External API clients and integrations
+/services         - Business logic layer with caching/orchestration
+/hooks            - Custom React hooks for stateful logic
+/utils            - Pure utility functions and helpers
 /types            - TypeScript type definitions
+/constants        - Application-wide constants and configuration
+/contexts         - React Context providers for global state
+/middleware       - Next.js Edge middleware
+/public           - Static assets served from root
 /docs             - Comprehensive documentation
-/.github/agents   - Specialized agent definitions
-/.github/skills   - Reusable skill modules
+/.github/agents   - Specialized agent definitions (if using)
+/.github/skills   - Reusable skill modules (if using)
 ```
 
 ## Code Style Guidelines
