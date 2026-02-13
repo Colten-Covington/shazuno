@@ -41,7 +41,6 @@ function TextSearchComponent({ onSearch, isSearching, songsLoaded }: TextSearchP
           placeholder={songsLoaded === 0 ? "Loading songs..." : "Type or paste song lyrics here..."}
           rows={6}
           className="w-full px-4 py-3 rounded-lg bg-white/20 text-white placeholder-gray-400 border border-white/30 focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none disabled:opacity-50 disabled:cursor-not-allowed"
-          aria-label="Song lyrics input"
           aria-describedby="lyrics-hint"
         />
         <p id="lyrics-hint" className="sr-only">Enter or paste the lyrics of a song you want to find. Press Ctrl+Enter or use the search button to start searching.</p>
@@ -50,7 +49,6 @@ function TextSearchComponent({ onSearch, isSearching, songsLoaded }: TextSearchP
         type="submit"
         disabled={isSearching || songsLoaded === 0}
         className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 px-4 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-300"
-        aria-label={isSearching ? 'Searching for matching songs' : songsLoaded === 0 ? 'Waiting for songs to load' : 'Search for songs'}
       >
         {isSearching ? (
           <span className="flex items-center justify-center">

@@ -137,7 +137,6 @@ const SongResultItem = memo(function SongResultItem({ song, query, onLyricsClick
               type="button"
               onClick={handleClick}
               className="bg-black/30 rounded p-3 mt-2 text-left w-full hover:bg-black/40 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-300"
-              aria-label={`View full lyrics for ${song.title}`}
             >
               <p className="text-sm text-gray-300">
                 {(() => {

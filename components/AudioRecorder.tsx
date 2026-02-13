@@ -94,7 +94,6 @@ export default function AudioRecorder({ onSearch, isSearching, songsLoaded = 0 }
           <button
             onClick={stopRecording}
             className="w-32 h-32 rounded-full bg-red-500 hover:bg-red-600 text-white font-bold shadow-lg transform transition-all hover:scale-105 animate-pulse focus:outline-none focus:ring-4 focus:ring-red-300"
-            aria-label="Stop recording lyrics"
             aria-pressed="true"
           >
             <div className="flex flex-col items-center">
@@ -107,7 +106,6 @@ export default function AudioRecorder({ onSearch, isSearching, songsLoaded = 0 }
             onClick={startRecording}
             disabled={isSearching || !!error || songsLoaded === 0}
             className="w-32 h-32 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold shadow-lg transform transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-4 focus:ring-purple-300"
-            aria-label="Start recording lyrics"
             aria-pressed="false"
             aria-disabled={isSearching || !!error || songsLoaded === 0}
           >
@@ -138,7 +136,6 @@ export default function AudioRecorder({ onSearch, isSearching, songsLoaded = 0 }
             onClick={handleSearch}
             disabled={isSearching}
             className="mt-4 w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-green-300"
-            aria-label="Search songs with detected lyrics"
           >
             <span role="img" aria-label="Magnifying glass">🔍</span> {isSearching ? 'Searching...' : 'Search Songs'}
           </button>
