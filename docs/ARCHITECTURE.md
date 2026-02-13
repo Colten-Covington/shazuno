@@ -4,6 +4,153 @@
 
 Shazuno is a client-side web application built with Next.js 15 that enables users to search through Suno.com artist song libraries using text or voice input. The application features a modern React-based architecture with TypeScript, focusing on accessibility, performance, and user experience.
 
+## Layered Architecture
+
+The codebase follows a clear layered architecture pattern with distinct responsibilities:
+
+```
+┌──────────────────────────────────────────────────┐
+│  COMPONENTS (app/, components/)                  │
+│  - UI rendering                                  │
+│  - User interaction                              │
+│  - Event handling                                │
+└────────────────┬─────────────────────────────────┘
+                 │ props, callbacks
+┌────────────────▼─────────────────────────────────┐
+│  HOOKS (hooks/)                                  │
+│  - React state management                        │
+│  - useEffect, useState, useCallback              │
+│  - Loading/error states                          │
+│  - Debouncing & UI logic                         │
+└────────────────┬─────────────────────────────────┘
+                 │ async calls
+┌────────────────▼─────────────────────────────────┐
+│  SERVICES (services/)                            │
+│  - Business logic                                │
+│  - Caching (5-minute TTL)                        │
+│  - Error handling & messaging                    │
+│  - Orchestration & validation                    │
+└────────────────┬─────────────────────────────────┘
+                 │ data fetching
+┌────────────────▼─────────────────────────────────┐
+│  LIB (lib/)                                      │
+│  - Low-level API clients                         │
+│  - Fetch calls                                   │
+│  - Data mapping                                  │
+│  - Pagination                                    │
+└────────────────┬─────────────────────────────────┘
+                 │ HTTP requests
+┌────────────────▼─────────────────────────────────┐
+│  EXTERNAL APIs                                   │
+│  - Suno API                                      │
+│  - Web Speech API                                │
+└──────────────────────────────────────────────────┘
+```
+
+### Layer Responsibilities
+
+#### 1. **Components Layer** (`/app`, `/components`)
+- **Purpose**: UI presentation and user interaction
+- **Contains**: JSX, Tailwind styles, event handlers
+- **Consumes**: Hooks
+- **Example**: `app/page.tsx`, `components/TextSearch.tsx`
+
+#### 2. **Hooks Layer** (`/hooks`)
+- **Purpose**: React state management and lifecycle
+- **Contains**: useState, useEffect, useCallback, useMemo
+- **Consumes**: Services (NOT lib directly!)
+- **Example**: `useSunoSongs`, `useSpeechRecognition`
+- **Key Rule**: Always call services, never lib directly
+
+#### 3. **Services Layer** (`/services`)
+- **Purpose**: Business logic, caching, orchestration
+- **Contains**: Caching strategies, error handling, validation
+- **Consumes**: Lib functions
+- **Example**: `sunoService` (provides 5-min caching)
+- **Key Rule**: Framework-agnostic, can be used outside React
+
+#### 4. **Lib Layer** (`/lib`)
+- **Purpose**: Low-level API clients
+- **Contains**: Fetch calls, data mapping, pagination
+- **Consumes**: External APIs
+- **Example**: `fetchAllSunoSongs`, `fetchSunoPage`
+- **Key Rule**: No caching, no complex logic
+
+### Real Example: Song Loading
+
+Here's how the layers work together to load songs:
+
+```typescript
+// ❌ ANTI-PATTERN: Hook bypasses service
+// hooks/useSunoSongs.ts
+import { fetchAllSunoSongs } from '@/lib/suno'; // WRONG!
+
+export function useSunoSongs() {
+  const songs = await fetchAllSunoSongs(username); // No caching!
+}
+
+// ✅ CORRECT PATTERN: Hook uses service
+// hooks/useSunoSongs.ts
+import { sunoService } from '@/services'; // CORRECT!
+
+export function useSunoSongs(initialUsername?: string) {
+  const [songs, setSongs] = useState<Song[]>([]);
+  
+  const loadSongs = useCallback(async (username: string) => {
+    // Service provides caching!
+    const fetchedSongs = await sunoService.fetchUserSongs(username);
+    setSongs(fetchedSongs);
+  }, []);
+  
+  return { songs, loadSongs };
+}
+```
+
+**The flow:**
+1. User types username → Component calls hook
+2. Hook: `useSunoSongs.loadSongs(username)`
+3. Service: `sunoService.fetchUserSongs(username)` - checks cache
+4. If cache miss: Service calls `lib/fetchAllSunoSongs(username)`
+5. Lib: Makes HTTP requests to Suno API
+6. Service: Caches result for 5 minutes
+7. Hook: Updates React state
+8. Component: Re-renders with new data
+
+### Benefits of This Architecture
+
+✅ **Caching**: Services layer provides transparent caching  
+✅ **Separation of Concerns**: Each layer has one job  
+✅ **Testability**: Each layer can be tested independently  
+✅ **Reusability**: Services can be used by multiple hooks  
+✅ **Maintainability**: Clear where to add features  
+
+### Constants Layer (`/constants`)
+
+Constants are organized by domain and imported across layers:
+
+```typescript
+// constants/suno.ts
+export const SUNO_API_BASE_URL = 'https://studio-api.prod.suno.com';
+export const MAX_CONSECUTIVE_EMPTY_PAGES = 10;
+
+// constants/timing.ts
+export const USERNAME_DEBOUNCE_MS = 500;
+
+// Usage in lib
+import { SUNO_API_BASE_URL } from '@/constants';
+```
+
+### Utils Layer (`/utils`)
+
+Pure utility functions with no side effects:
+
+```typescript
+// utils/similarity.ts
+export function calculateSimilarity(str1: string, str2: string): number {
+  // Pure function, no state, no API calls
+}
+```
+
 ## High-Level Architecture
 
 ```

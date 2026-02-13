@@ -1,4 +1,5 @@
 import type { SunoProfile, SunoClip, Song } from '@/types/speech';
+import { SUNO_API_BASE_URL, MAX_CONSECUTIVE_EMPTY_PAGES } from '@/constants';
 
 /**
  * Fetches a page of clips from the Suno API for a given username
@@ -7,7 +8,7 @@ import type { SunoProfile, SunoClip, Song } from '@/types/speech';
  * @returns The API response data or null if the request fails
  */
 export async function fetchSunoPage(username: string, page: number): Promise<SunoProfile | null> {
-  const url = `https://studio-api.prod.suno.com/api/profiles/${username}?clips_sort_by=created_at&playlists_sort_by=created_at&page=${page}`;
+  const url = `${SUNO_API_BASE_URL}/api/profiles/${username}?clips_sort_by=created_at&playlists_sort_by=created_at&page=${page}`;
   const response = await fetch(url, {
     method: 'GET',
     headers: {
@@ -53,8 +54,6 @@ export async function fetchAllSunoSongs(
 ): Promise<Song[]> {
   const normalizedUsername = username.trim().toLowerCase();
   let page = 0;
-  // Stop after 10 consecutive empty pages to avoid infinite loops while allowing gaps
-  const MAX_CONSECUTIVE_EMPTY_PAGES = 10;
   let emptyPages = 0;
   const songsMap = new Map<string, Song>();
 

@@ -429,6 +429,130 @@ When making significant changes:
 4. Update type definitions if data structures change
 5. Document architectural decisions in code comments
 
+## Self-Improvement for AI Agents 🤖
+
+### **MANDATORY After Every Task** ⚠️
+
+Self-improvement is **NOT OPTIONAL** and should **NOT require prompting**. It is part of completing the task.
+
+**Every completed task includes:**
+
+1. **Verification** (do this FIRST!)
+   ```bash
+   git status          # Verify changes exist
+   git diff            # Review actual changes
+   ls -la file.tsx     # Confirm new files exist
+   pnpm build          # Ensure no errors
+   ```
+
+2. **Analysis** - What changed and why?
+
+3. **Documentation** - Update AGENTS.md with real examples
+
+4. **Improvement** - Make it easier for the next agent
+
+### Critical Failure Patterns to Avoid
+
+🚫 **Failure Pattern 1: Writing summaries without verification**
+- Problem: Claiming changes were made without checking `git status`
+- Prevention: ALWAYS verify with git before any summary
+
+🚫 **Failure Pattern 2: Forgetting self-improvement**
+- Problem: Completing task but not updating documentation
+- Prevention: Self-improvement is automatic, not prompted
+
+🚫 **Failure Pattern 3: Hypothetical examples**
+- Problem: Using made-up code instead of real examples
+- Prevention: Only reference actual files in the codebase
+
+### Verification Checklist
+
+Before claiming task completion:
+```markdown
+- [ ] Run `git status` - verify changes exist
+- [ ] Run `git diff` - review actual changes
+- [ ] Verify new files exist with `ls -la`
+- [ ] Build passes - no errors introduced
+- [ ] Self-improvement done - docs updated with real examples
+- [ ] Commit message matches actual changes
+```
+
+### After-Task Self-Improvement Protocol
+
+1. **Analyze What You Did**
+   - What files changed and why?
+   - What was the root problem?
+   - What patterns did you discover?
+
+2. **Update Documentation**
+   - Add to relevant AGENTS.md (root or directory)
+   - Update architecture docs if needed
+   - Document patterns in DESIGN_PATTERNS.md
+   - Add anti-pattern warnings
+
+3. **Use Real Examples**
+   - Reference actual files from your changes
+   - Show before/after comparisons
+   - Explain the "why" not just "what"
+   - Add ✅/❌ indicators for clarity
+
+### What Makes Good Documentation
+
+✅ **Specific** - Real code examples, not abstractions  
+✅ **Comparative** - Show correct vs incorrect side-by-side  
+✅ **Contextual** - Explain reasoning and trade-offs  
+✅ **Searchable** - Use keywords developers will search  
+✅ **Actionable** - Clear guidance for what to do  
+✅ **Verified** - Test that examples actually work  
+
+### Example Documentation Update
+
+When you discover a pattern:
+
+```markdown
+## Architecture Layering ⚠️
+
+**Pattern:** Hooks should call services, not lib directly
+
+**Example from codebase:**
+✅ CORRECT: `useSunoSongs` uses `sunoService` (provides caching)
+❌ WRONG: Hook calls `lib/fetchAllSunoSongs` directly (no caching)
+
+**Why:** Service layer provides:
+- 5-minute caching (reduces API calls)
+- Better error messages
+- Business logic orchestration
+
+**See:** docs/ARCHITECTURE.md for layering details
+```
+
+### Priority Updates
+
+**High Priority:**
+- AGENTS.md files (most impactful)
+- Architecture documentation
+- Anti-pattern warnings
+
+**Medium Priority:**
+- Design pattern documentation
+- Best practices guides
+- Code examples
+
+**Low Priority:**
+- README updates
+- Inline comments
+- Type documentation
+
+### Complete Guide
+
+📚 See **[docs/SELF-IMPROVEMENT.md](../docs/SELF-IMPROVEMENT.md)** for:
+- Detailed process and templates
+- Real examples from this project
+- Documentation quality checklist
+- Continuous improvement strategies
+
+**Philosophy:** Make the codebase easier for the next agent (including future you)!
+
 ## Resources
 
 - [Next.js Documentation](https://nextjs.org/docs)

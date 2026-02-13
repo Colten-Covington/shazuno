@@ -278,6 +278,64 @@ pnpm audit
 
 # Update dependencies
 pnpm update
+```
+
+## Self-Improvement Protocol 🔄
+
+### **MANDATORY: After Every Task**
+
+Self-improvement is **NOT OPTIONAL** and should **NOT require prompting**.
+
+**After completing ANY task:**
+
+1. ✅ **Verify changes exist** - Run `git status` and `git diff`
+2. ✅ **Update documentation** - Minimum: one AGENTS.md file  
+3. ✅ **Add real examples** - From actual code changes
+4. ✅ **Document learnings** - Patterns and anti-patterns
+
+**Critical Reminder:** Never write commit messages or summaries before verifying changes with `git status`.
+
+### Quick Self-Improvement Checklist
+
+```markdown
+- [ ] Ran `git status` - verified changes exist
+- [ ] Ran `git diff` - reviewed actual changes
+- [ ] Updated relevant AGENTS.md file(s)
+- [ ] Added real code examples from codebase
+- [ ] Documented any patterns discovered
+- [ ] Documented any anti-patterns avoided
+- [ ] Build passes successfully
+```
+
+### See Full Protocol
+
+For comprehensive guidance: [docs/SELF-IMPROVEMENT.md](docs/SELF-IMPROVEMENT.md)
+
+**Key sections:**
+- Verification Protocol (Step 0 - do this FIRST!)
+- Common Failure Patterns (learn from past mistakes)
+- Post-Task Reflection Template
+- Documentation Quality Checklist
+
+## Critical Reminders ⚠️
+
+### Verification First
+- **ALWAYS** run `git status` before claiming completion
+- **ALWAYS** run `git diff` before writing commit messages
+- **ALWAYS** verify new files exist before claiming creation
+- **NEVER** write summaries for changes that don't exist
+
+### Self-Improvement Always
+- **EVERY task** ends with self-improvement
+- **NOT OPTIONAL** - it's part of completing the task
+- **MINIMUM**: Update one AGENTS.md + one real example
+- **AUTOMATIC** - don't wait to be prompted
+
+### Real Examples Only
+- Only use code that actually exists in the codebase
+- Reference specific files and line numbers
+- Test that all examples work
+- No hypothetical or made-up examples
 
 # Project uses pnpm@9.0.0 - specified in package.json
 ```
@@ -385,6 +443,67 @@ Description of work completed
 - What was discovered
 - What to remember for next time
 ```
+
+## Self-Improvement Protocol 🔄
+
+**After completing any task, invest in future productivity:**
+
+### Why Self-Improve?
+Every task is an opportunity to make the next task easier. By documenting learnings immediately, we prevent repeating mistakes and build institutional knowledge.
+
+### Quick Self-Improvement Checklist
+
+After completing work:
+1. ✅ **Reflect** - What changed? What was learned?
+2. ✅ **Document** - Update relevant AGENTS.md with patterns
+3. ✅ **Add Examples** - Use real code from your changes
+4. ✅ **Mark Anti-Patterns** - Document what NOT to do
+5. ✅ **Verify** - Check documentation is accurate
+
+### What to Update
+
+**Always update at minimum:**
+- Relevant AGENTS.md file (root or directory)
+- Add one real code example
+- Document one pattern or anti-pattern
+
+**For significant work, also update:**
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for system changes
+- [docs/DESIGN_PATTERNS.md](docs/DESIGN_PATTERNS.md) for new patterns
+- [docs/BEST_PRACTICES.md](docs/BEST_PRACTICES.md) for standards
+- In-code JSDoc comments for complex functions
+
+### Documentation Best Practices
+
+When updating AGENTS.md or docs:
+- ✅ **Use real examples** from the codebase (file names, line numbers)
+- ✅ **Show comparisons** (✅ correct vs ❌ wrong)
+- ✅ **Explain "why"** not just "what"
+- ✅ **Add visual indicators** (⚠️ warnings, 💡 tips)
+- ✅ **Cross-reference** related documentation
+- ✅ **Test examples** - verify code actually works
+
+### Example Pattern Documentation
+
+```markdown
+## Pattern Discovered: Hook Initialization
+
+**Problem:** Hooks with useEffect don't trigger on mount without initial values
+**Solution:** Pass initial parameters to hooks
+
+**Example:**
+✅ Correct: `useSunoSongs(DEFAULT_SUNO_USERNAME)` - loads immediately
+❌ Wrong: `useSunoSongs()` - never triggers useEffect
+
+**Why:** Empty string doesn't pass `if (value)` checks in useEffect
+```
+
+### Comprehensive Guide
+
+For detailed self-improvement guidance, see:
+📚 **[docs/SELF-IMPROVEMENT.md](docs/SELF-IMPROVEMENT.md)** - Complete protocol with templates and examples
+
+**Remember:** You're not just writing code. You're building knowledge for future agents!
 
 ## Quick Reference
 

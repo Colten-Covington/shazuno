@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { memo, useCallback, useMemo } from 'react';
 import type { Song } from '@/types/speech';
+import { LYRICS_SNIPPET_WINDOW_SIZE } from '@/constants';
 
 function normalizeWord(word: string): string {
   return word.toLowerCase().replace(/[^\w]/g, '');
@@ -75,7 +76,7 @@ interface SongResultItemProps {
 }
 
 const SongResultItem = memo(function SongResultItem({ song, query, onLyricsClick }: SongResultItemProps) {
-  const snippetData = useMemo(() => getSnippetWords(song.lyrics, query, 40), [song.lyrics, query]);
+  const snippetData = useMemo(() => getSnippetWords(song.lyrics, query, LYRICS_SNIPPET_WINDOW_SIZE), [song.lyrics, query]);
   
   const querySet = useMemo(() => 
     new Set(
@@ -103,8 +104,8 @@ const SongResultItem = memo(function SongResultItem({ song, query, onLyricsClick
             alt={`Album artwork for ${song.title}`}
             width={80}
             height={80}
-            className="w-20 h-20 rounded-lg object-cover"
-            loading="lazy"
+            className="w-20 h-20 rounded-lg object-cover flex-shrink-0"
+            sizes="80px"
           />
         )}
         <div className="flex-1">

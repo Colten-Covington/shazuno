@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import type { SpeechRecognition, SpeechRecognitionEvent, SpeechRecognitionErrorEvent } from '@/types/speech';
+import { useSpeechRecognition } from '@/hooks';
 
 interface AudioRecorderProps {
   onSearch: (lyrics: string) => void;
@@ -10,76 +9,14 @@ interface AudioRecorderProps {
 }
 
 export default function AudioRecorder({ onSearch, isSearching, songsLoaded = 0 }: AudioRecorderProps) {
-  const [isRecording, setIsRecording] = useState(false);
-  const [transcript, setTranscript] = useState('');
-  const [error, setError] = useState('');
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
-
-  useEffect(() => {
-    // Check if browser supports speech recognition
-    if (typeof window !== 'undefined') {
-      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-      
-      if (SpeechRecognition) {
-        const recognition = new SpeechRecognition();
-        recognition.continuous = true;
-        recognition.interimResults = true;
-        recognition.lang = 'en-US';
-
-        recognition.onresult = (event: SpeechRecognitionEvent) => {
-          let interimTranscript = '';
-          let finalTranscript = '';
-
-          for (let i = event.resultIndex; i < event.results.length; i++) {
-            const transcript = event.results[i][0].transcript;
-            if (event.results[i].isFinal) {
-              finalTranscript += transcript + ' ';
-            } else {
-              interimTranscript += transcript;
-            }
-          }
-
-          setTranscript(finalTranscript || interimTranscript);
-        };
-
-        recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-          console.error('Speech recognition error:', event.error);
-          setError(`Error: ${event.error}`);
-          setIsRecording(false);
-        };
-
-        recognition.onend = () => {
-          setIsRecording(false);
-        };
-
-        recognitionRef.current = recognition;
-      } else {
-        setError('Speech recognition is not supported in your browser. Please use Chrome or Edge.');
-      }
-    }
-
-    return () => {
-      if (recognitionRef.current) {
-        recognitionRef.current.stop();
-      }
-    };
-  }, []);
-
-  const startRecording = () => {
-    if (recognitionRef.current) {
-      setTranscript('');
-      setError('');
-      recognitionRef.current.start();
-      setIsRecording(true);
-    }
-  };
-
-  const stopRecording = () => {
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
-      setIsRecording(false);
-    }
-  };
+  const { 
+    isRecording, 
+    transcript, 
+    error, 
+    isSupported,
+    startRecording, 
+    stopRecording 
+  } = useSpeechRecognition();
 
   const handleSearch = () => {
     if (transcript.trim()) {
