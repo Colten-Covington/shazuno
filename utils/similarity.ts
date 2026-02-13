@@ -1,3 +1,5 @@
+import { EXACT_MATCH_SCORE, ALL_WORDS_MATCH_SCORE } from '@/constants';
+
 // Normalize strings for comparison: lowercase, remove newlines, remove formatting characters
 function normalize(str: string): string {
   return str
@@ -24,7 +26,7 @@ export function calculateSimilarity(str1: string, str2: string): number {
   }
 
   if (s1.includes(s2)) {
-    return 1.0;
+    return EXACT_MATCH_SCORE;
   }
 
   let matchingWords = 0;
@@ -37,7 +39,7 @@ export function calculateSimilarity(str1: string, str2: string): number {
   const ratio = matchingWords / queryWords.length;
 
   if (ratio === 1) {
-    return 0.9;
+    return ALL_WORDS_MATCH_SCORE;
   }
 
   return ratio;

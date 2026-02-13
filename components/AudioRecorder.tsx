@@ -2,6 +2,11 @@
 
 import { useState, useRef, useEffect } from 'react';
 import type { SpeechRecognition, SpeechRecognitionEvent, SpeechRecognitionErrorEvent } from '@/types/speech';
+import { 
+  SPEECH_RECOGNITION_LANG, 
+  SPEECH_RECOGNITION_CONTINUOUS, 
+  SPEECH_RECOGNITION_INTERIM_RESULTS 
+} from '@/constants';
 
 interface AudioRecorderProps {
   onSearch: (lyrics: string) => void;
@@ -22,9 +27,9 @@ export default function AudioRecorder({ onSearch, isSearching, songsLoaded = 0 }
       
       if (SpeechRecognition) {
         const recognition = new SpeechRecognition();
-        recognition.continuous = true;
-        recognition.interimResults = true;
-        recognition.lang = 'en-US';
+        recognition.continuous = SPEECH_RECOGNITION_CONTINUOUS;
+        recognition.interimResults = SPEECH_RECOGNITION_INTERIM_RESULTS;
+        recognition.lang = SPEECH_RECOGNITION_LANG;
 
         recognition.onresult = (event: SpeechRecognitionEvent) => {
           let interimTranscript = '';

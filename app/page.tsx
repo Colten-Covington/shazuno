@@ -6,9 +6,10 @@ import SongResults from '@/components/SongResults';
 import { calculateSimilarity } from '@/utils/similarity';
 import { fetchAllSunoSongs } from '@/lib/suno';
 import type { Song } from '@/types/speech';
+import { DEFAULT_SUNO_USERNAME, USERNAME_DEBOUNCE_MS, MAX_SEARCH_RESULTS } from '@/constants';
 
 export default function Home() {
-  const [sunoUsername, setSunoUsername] = useState('beginbot');
+  const [sunoUsername, setSunoUsername] = useState(DEFAULT_SUNO_USERNAME);
   const [allSongs, setAllSongs] = useState<Song[]>([]);
   const [searchResults, setSearchResults] = useState<Song[]>([]);
   const [isLoadingSongs, setIsLoadingSongs] = useState(false);
@@ -31,7 +32,7 @@ export default function Home() {
     return scoredSongs
       .filter((song) => song.matchScore > 0)
       .sort((a, b) => b.matchScore - a.matchScore)
-      .slice(0, 10);
+      .slice(0, MAX_SEARCH_RESULTS);
   }, []);
 
   // Load all songs from Suno API when username changes
@@ -69,7 +70,7 @@ export default function Home() {
     };
 
     // Debounce the load to avoid too many requests while typing
-    const timer = setTimeout(loadSongs, 500);
+    const timer = setTimeout(loadSongs, USERNAME_DEBOUNCE_MS);
     return () => clearTimeout(timer);
   }, [sunoUsername]);
 
