@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo, useTransition, useRef, useDeferredValue } from 'react';
+import { useState, useEffect, useCallback, useMemo, useTransition, useDeferredValue } from 'react';
 import TextSearch from '@/components/TextSearch';
 import SongResults from '@/components/SongResults';
 import { calculateSimilarity } from '@/utils/similarity';
@@ -10,12 +10,10 @@ export default function Home() {
   const [sunoUsername, setSunoUsername] = useState('beginbot');
   const [allSongs, setAllSongs] = useState<Song[]>([]);
   const [searchResults, setSearchResults] = useState<Song[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
   const [isLoadingSongs, setIsLoadingSongs] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeSong, setActiveSong] = useState<Song | null>(null);
   const [isPending, startTransition] = useTransition();
-  const searchQueryRef = useRef<string>('');
   // Defer the search query to keep input responsive
   const deferredSearchQuery = useDeferredValue(searchQuery);
   const fetchSunoPage = async (username: string, page: number) => {
@@ -147,7 +145,6 @@ export default function Home() {
   }, [memoizedResults, startTransition]);
 
   const handleSearch = useCallback((query: string) => {
-    searchQueryRef.current = query;
     // Direct update without startTransition - useDeferredValue handles the deferral
     setSearchQuery(query);
   }, []);
@@ -203,7 +200,7 @@ export default function Home() {
 
           {/* Search */}
           <div className="bg-white/10 backdrop-blur-lg rounded-lg p-6 mb-6 shadow-xl">
-            <TextSearch onSearch={handleSearch} isSearching={isSearching} songsLoaded={allSongs.length} />
+            <TextSearch onSearch={handleSearch} isSearching={isPending} songsLoaded={allSongs.length} />
           </div>
 
           {/* Results */}
