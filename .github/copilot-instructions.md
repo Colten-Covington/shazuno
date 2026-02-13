@@ -1,10 +1,10 @@
-# GitHub Copilot Instructions for Shazuno
+# GitHub Copilot Instructions for Buzz Stack
 
-This file provides context and guidelines for GitHub Copilot when working on the Shazuno codebase.
+This file provides context and guidelines for GitHub Copilot when working on projects built with Buzz Stack.
 
 ## Agent System
 
-For specialized tasks, refer to the **Agent System**:
+For specialized tasks, refer to the **Agent System** (if you have configured agents):
 - **[Agent Registry](agents/README.md)** - Overview of available agents and their capabilities
 - **[Skills Library](skills/README.md)** - Reusable knowledge modules for agents
 
@@ -20,26 +20,29 @@ For specialized tasks, refer to the **Agent System**:
 
 ## Project Overview
 
-Shazuno is a Shazam-like web application for searching songs from Suno.com using text or voice input. It's built with Next.js 15, React 18, TypeScript, and Tailwind CSS, following modern web development best practices with a focus on accessibility and performance.
+Buzz Stack is a modern Next.js boilerplate for building production-ready web applications. It's built with Next.js 15, React 18, TypeScript, and Tailwind CSS, following modern web development best practices with a focus on accessibility and performance.
 
 ## Technology Stack
 
 - **Framework:** Next.js 15 (App Router)
-- **UI Library:** React 18 with hooks
+- **UI Library:** React 18 with hooks and concurrent features
 - **Language:** TypeScript (strict mode)
 - **Styling:** Tailwind CSS 3.4
 - **Package Manager:** pnpm 9.0.0
-- **Voice Recognition:** Web Speech API (browser native)
-- **External API:** Suno API (https://studio-api.prod.suno.com)
 
 ## Project Structure
 
 ```
 /app         - Next.js App Router pages and layouts
 /components  - Reusable React components
-/lib         - Business logic and API integration
-/utils       - Utility functions (algorithms, helpers)
+/lib         - External API clients and integrations
+/services    - Business logic layer with caching
+/hooks       - Custom React hooks
+/utils       - Pure utility functions
 /types       - TypeScript type definitions
+/constants   - Application constants
+/contexts    - React Context providers
+/middleware  - Next.js middleware
 /docs        - Comprehensive documentation
 ```
 
@@ -56,19 +59,19 @@ Shazuno is a Shazam-like web application for searching songs from Suno.com using
 Example:
 ```typescript
 // ✅ Good
-interface SongProps {
-  title: string;
-  lyrics: string;
-  matchScore: number;
+interface UserProps {
+  id: string;
+  name: string;
+  email: string;
 }
 
-function processSong(song: SongProps): string {
-  return song.title;
+function processUser(user: UserProps): string {
+  return user.name;
 }
 
 // ❌ Avoid
-function processSong(song: any) {
-  return song.title;
+function processUser(user: any) {
+  return user.name;
 }
 ```
 
@@ -139,11 +142,11 @@ Example:
 ```typescript
 // Memoize expensive calculations
 const results = useMemo(() => {
-  return songs.map(song => ({
-    ...song,
-    score: calculateSimilarity(song.lyrics, query)
-  })).filter(song => song.score > 0);
-}, [songs, query]);
+  return items.map(item => ({
+    ...item,
+    score: calculateScore(item.value, query)
+  })).filter(item => item.score > 0);
+}, [items, query]);
 
 // Non-blocking updates
 const [isPending, startTransition] = useTransition();
@@ -164,7 +167,7 @@ startTransition(() => {
 Example:
 ```tsx
 <section aria-labelledby="search-heading">
-  <h2 id="search-heading" className="sr-only">Search Songs</h2>
+  <h2 id="search-heading" className="sr-only">Search Form</h2>
   
   <label htmlFor="search-input" className="block text-sm font-medium">
     Search Query
@@ -183,21 +186,21 @@ Example:
 
 ## Naming Conventions
 
-- **Components:** PascalCase - `AudioRecorder.tsx`, `SongResults.tsx`
-- **Utilities:** camelCase - `similarity.ts`, `suno.ts`
-- **Functions:** camelCase - `calculateSimilarity()`, `fetchAllSunoSongs()`
-- **Constants:** UPPER_SNAKE_CASE - `MAX_RESULTS`, `DEFAULT_USERNAME`
-- **Interfaces:** PascalCase - `SongProps`, `SearchOptions`
-- **Types:** PascalCase - `Song`, `SunoClip`
+- **Components:** PascalCase - `Header.tsx`, `UserCard.tsx`
+- **Utilities:** camelCase - `formatDate.ts`, `validation.ts`
+- **Functions:** camelCase - `calculateScore()`, `fetchUsers()`
+- **Constants:** UPPER_SNAKE_CASE - `MAX_RESULTS`, `API_BASE_URL`
+- **Interfaces:** PascalCase - `UserProps`, `ApiResponse`
+- **Types:** PascalCase - `User`, `Product`
 
-## Common Patterns in This Codebase
+## Common Patterns
 
-### API Integration Pattern (lib/suno.ts)
+### API Integration Pattern
 
 ```typescript
 // Fetch with error handling
-export async function fetchSunoPage(username: string, page: number): Promise<SunoProfile | null> {
-  const url = `https://studio-api.prod.suno.com/api/profiles/${username}?page=${page}`;
+export async function fetchData(id: string): Promise<Data | null> {
+  const url = `${API_BASE_URL}/data/${id}`;
   const response = await fetch(url);
   
   if (!response.ok) {
@@ -208,14 +211,14 @@ export async function fetchSunoPage(username: string, page: number): Promise<Sun
 }
 
 // Use Map for deduplication
-const songsMap = new Map<string, Song>();
-clips.forEach(clip => {
-  songsMap.set(clip.id, mapClipToSong(clip));
+const dataMap = new Map<string, Data>();
+items.forEach(item => {
+  dataMap.set(item.id, transformItem(item));
 });
-return Array.from(songsMap.values());
+return Array.from(dataMap.values());
 ```
 
-### Search Algorithm Pattern (utils/similarity.ts)
+### Utility Pattern
 
 ```typescript
 // Normalize, then compare
@@ -227,35 +230,35 @@ function normalize(str: string): string {
     .replace(/[^\w\s]/g, '');
 }
 
-// Word-based matching with Set for O(1) lookup
-const lyricsWords = new Set(lyrics.split(/\s+/));
+// Set for O(1) lookup
+const targetWords = new Set(target.split(/\s+/));
 const queryWords = query.split(/\s+/);
 let matchingWords = 0;
 for (const word of queryWords) {
-  if (lyricsWords.has(word)) {
+  if (targetWords.has(word)) {
     matchingWords++;
   }
 }
 ```
 
-### State Management Pattern (app/page.tsx)
+### State Management Pattern
 
 ```typescript
-// Debounced API calls
+// Debounced operations
 useEffect(() => {
   const timer = setTimeout(() => {
-    fetchSongs(username);
+    fetchData(value);
   }, 500);
   return () => clearTimeout(timer);
-}, [username]);
+}, [value]);
 
-// Deferred search query
+// Deferred values for responsive input
 const deferredQuery = useDeferredValue(searchQuery);
 
 // Memoized results
 const results = useMemo(() => {
-  return calculateResults(deferredQuery, allSongs);
-}, [deferredQuery, allSongs]);
+  return calculateResults(deferredQuery, allData);
+}, [deferredQuery, allData]);
 ```
 
 ## Best Practices
