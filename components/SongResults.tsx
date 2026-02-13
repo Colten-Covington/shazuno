@@ -5,9 +5,87 @@ import type { Song } from '@/types/speech';
 
 interface SongResultsProps {
   results: Song[];
+  query: string;
+  onLyricsClick: (song: Song) => void;
 }
 
-export default function SongResults({ results }: SongResultsProps) {
+function normalizeWord(word: string): string {
+  return word.toLowerCase().replace(/[^\w]/g, '');
+}
+
+function renderHighlightedToken(
+  word: string,
+  index: number,
+  querySet: Set<string>
+) {
+  const match = word.match(/^(\W*)(\w+)(\W*)$/);
+
+  if (!match) {
+    return <span key={`${word}-${index}`}>{word} </span>;
+  }
+
+  const [, leading, core, trailing] = match;
+  const normalized = normalizeWord(core);
+  const isMatch = normalized && querySet.has(normalized);
+
+  return (
+    <span key={`${word}-${index}`}>
+      {leading}
+      <span className={isMatch ? 'bg-yellow-400/40 text-yellow-100 px-1 rounded' : undefined}>
+        {core}
+      </span>
+      {trailing}{' '}
+    </span>
+  );
+}
+
+function getSnippetWords(lyrics: string, query: string, windowSize: number) {
+  const words = lyrics.split(/\s+/).filter(Boolean);
+  if (words.length === 0) {
+    return { words: [], start: 0, end: 0 };
+  }
+
+  const queryWords = query
+    .split(/\s+/)
+    .map((word) => normalizeWord(word))
+    .filter(Boolean);
+
+  if (queryWords.length === 0 || words.length <= windowSize) {
+    return { words, start: 0, end: words.length };
+  }
+
+  const querySet = new Set(queryWords);
+  const matches = words.map((word) => querySet.has(normalizeWord(word)));
+
+  let bestStart = 0;
+  let bestCount = -1;
+  let currentCount = 0;
+
+  for (let i = 0; i < words.length; i++) {
+    if (matches[i]) {
+      currentCount += 1;
+    }
+
+    if (i >= windowSize) {
+      if (matches[i - windowSize]) {
+        currentCount -= 1;
+      }
+    }
+
+    if (i >= windowSize - 1) {
+      const start = i - windowSize + 1;
+      if (currentCount > bestCount) {
+        bestCount = currentCount;
+        bestStart = start;
+      }
+    }
+  }
+
+  return { words, start: bestStart, end: Math.min(bestStart + windowSize, words.length) };
+}
+
+export default function SongResults({ results, query, onLyricsClick }: SongResultsProps) {
+
   if (results.length === 0) {
     return null;
   }
@@ -60,11 +138,36 @@ export default function SongResults({ results }: SongResultsProps) {
                 )}
                 
                 {song.lyrics && (
-                  <div className="bg-black/30 rounded p-3 mt-2">
-                    <p className="text-sm text-gray-300 line-clamp-3">
-                      {song.lyrics}
+                  <button
+                    type="button"
+                    onClick={() => onLyricsClick(song)}
+                    className="bg-black/30 rounded p-3 mt-2 text-left w-full hover:bg-black/40 transition-colors"
+                  >
+                    <p className="text-sm text-gray-300">
+                      {(() => {
+                        const { words, start, end } = getSnippetWords(song.lyrics, query, 40);
+                        const querySet = new Set(
+                          query
+                            .split(/\s+/)
+                            .map((word) => normalizeWord(word))
+                            .filter(Boolean)
+                        );
+
+                        const snippet = words.slice(start, end);
+                        const hasLeading = start > 0;
+                        const hasTrailing = end < words.length;
+
+                        return (
+                          <>
+                            {hasLeading && <span className="text-gray-500">... </span>}
+                            {snippet.map((word, index) => renderHighlightedToken(word, index, querySet))}
+                            {hasTrailing && <span className="text-gray-500">...</span>}
+                          </>
+                        );
+                      })()}
                     </p>
-                  </div>
+                    <p className="text-xs text-gray-400 mt-2">Click to view full lyrics</p>
+                  </button>
                 )}
                 
                 {song.audioUrl && (

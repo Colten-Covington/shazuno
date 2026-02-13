@@ -18,15 +18,25 @@ export default function TextSearch({ onSearch, isSearching, songsLoaded }: TextS
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      if (lyrics.trim() && songsLoaded > 0) {
+        onSearch(lyrics.trim());
+      }
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <label className="block text-white text-sm font-bold mb-2">
-          Enter Song Lyrics:
+          Enter Song Lyrics: <p className="inline-block text-gray-400 text-xs ml-2">(Press Ctrl+Enter to search)</p>
         </label>
         <textarea
           value={lyrics}
           onChange={(e) => setLyrics(e.target.value)}
+          onKeyDown={handleKeyDown}
           disabled={songsLoaded === 0}
           placeholder={songsLoaded === 0 ? "Loading songs..." : "Type or paste song lyrics here..."}
           rows={6}
