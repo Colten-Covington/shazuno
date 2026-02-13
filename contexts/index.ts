@@ -2,4 +2,5 @@
  * Central export point for all context providers and hooks
  */
 
-export { SongProvider, useSongContext } from './SongContext';
+// Add your context providers here
+// Example: export { AuthProvider, useAuth } from './AuthContext';

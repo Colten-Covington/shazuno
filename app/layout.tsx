@@ -2,21 +2,21 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Shazuno - Song Recognition for Suno",
-  description: "Shazam-like application for Suno.com songs. Search through Suno artist libraries using text or voice input with smart matching.",
-  keywords: ["suno", "song recognition", "music search", "lyrics search", "voice search", "shazam"],
-  authors: [{ name: "Shazuno Team" }],
+  title: "Buzz Stack - Modern Next.js Boilerplate",
+  description: "Production-ready Next.js 15 boilerplate with React 18, TypeScript, and Tailwind CSS. Built with best practices and accessibility in mind.",
+  keywords: ["nextjs", "react", "typescript", "tailwind", "boilerplate", "starter", "template"],
+  authors: [{ name: "Buzz Stack Team" }],
   openGraph: {
-    title: "Shazuno - Song Recognition for Suno",
-    description: "Shazam-like application for Suno.com songs",
+    title: "Buzz Stack - Modern Next.js Boilerplate",
+    description: "Production-ready Next.js boilerplate with best practices",
     type: "website",
     locale: "en_US",
-    siteName: "Shazuno",
+    siteName: "Buzz Stack",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Shazuno - Song Recognition for Suno",
-    description: "Shazam-like application for Suno.com songs",
+    title: "Buzz Stack - Modern Next.js Boilerplate",
+    description: "Production-ready Next.js boilerplate with best practices",
   },
   robots: {
     index: true,

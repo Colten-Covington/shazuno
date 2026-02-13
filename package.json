@@ -1,7 +1,8 @@
 {
-  "name": "shazuno",
+  "name": "buzz-stack",
   "version": "0.1.0",
   "private": true,
+  "description": "Modern Next.js 15 boilerplate with React 18, TypeScript, and Tailwind CSS",
   "packageManager": "pnpm@9.0.0",
   "scripts": {
     "dev": "next dev",

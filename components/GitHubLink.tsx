@@ -1,11 +1,19 @@
-export default function GitHubLink() {
+interface GitHubLinkProps {
+  repoUrl?: string;
+  label?: string;
+}
+
+export default function GitHubLink({ 
+  repoUrl = "https://github.com/yourusername/your-repo",
+  label = "View source on GitHub"
+}: GitHubLinkProps) {
   return (
     <a
-      href="https://github.com/Colten-Covington/shazuno"
+      href={repoUrl}
       target="_blank"
       rel="noopener noreferrer"
       className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-white/50"
-      aria-label="View source on GitHub"
+      aria-label={label}
     >
       <svg 
         className="w-5 h-5 text-white" 
