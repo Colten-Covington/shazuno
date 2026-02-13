@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback, memo } from 'react';
 
 interface TextSearchProps {
   onSearch: (lyrics: string) => void;
@@ -8,32 +8,33 @@ interface TextSearchProps {
   songsLoaded: number;
 }
 
-export default function TextSearch({ onSearch, isSearching, songsLoaded }: TextSearchProps) {
+function TextSearchComponent({ onSearch, isSearching, songsLoaded }: TextSearchProps) {
   const [lyrics, setLyrics] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     if (lyrics.trim() && songsLoaded > 0) {
       onSearch(lyrics.trim());
     }
-  };
+  }, [lyrics, songsLoaded, onSearch]);
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
       e.preventDefault();
       if (lyrics.trim() && songsLoaded > 0) {
         onSearch(lyrics.trim());
       }
     }
-  };
+  }, [lyrics, songsLoaded, onSearch]);
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4" noValidate>
       <div>
-        <label className="block text-white text-sm font-bold mb-2">
-          Enter Song Lyrics: <p className="inline-block text-gray-400 text-xs ml-2">(Press Ctrl+Enter to search)</p>
+        <label htmlFor="lyrics-input" className="block text-white text-sm font-bold mb-2">
+          Enter Song Lyrics: <span className="inline-block text-gray-400 text-xs ml-2">(Press Ctrl+Enter to search)</span>
         </label>
         <textarea
+          id="lyrics-input"
           value={lyrics}
           onChange={(e) => setLyrics(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -41,6 +42,7 @@ export default function TextSearch({ onSearch, isSearching, songsLoaded }: TextS
           placeholder={songsLoaded === 0 ? "Loading songs..." : "Type or paste song lyrics here..."}
           rows={6}
           className="w-full px-4 py-3 rounded-lg bg-white/20 text-white placeholder-gray-400 border border-white/30 focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none disabled:opacity-50 disabled:cursor-not-allowed"
+          aria-label="Song lyrics input"
         />
       </div>
       <button
@@ -65,3 +67,5 @@ export default function TextSearch({ onSearch, isSearching, songsLoaded }: TextS
     </form>
   );
 }
+
+export default memo(TextSearchComponent);

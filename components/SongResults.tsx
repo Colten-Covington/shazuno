@@ -1,13 +1,8 @@
 'use client';
 
 import Image from 'next/image';
+import { memo, useCallback, useMemo } from 'react';
 import type { Song } from '@/types/speech';
-
-interface SongResultsProps {
-  results: Song[];
-  query: string;
-  onLyricsClick: (song: Song) => void;
-}
 
 function normalizeWord(word: string): string {
   return word.toLowerCase().replace(/[^\w]/g, '');
@@ -50,42 +45,138 @@ function getSnippetWords(lyrics: string, query: string, windowSize: number) {
     .map((word) => normalizeWord(word))
     .filter(Boolean);
 
-  if (queryWords.length === 0 || words.length <= windowSize) {
-    return { words, start: 0, end: words.length };
+  if (queryWords.length === 0) {
+    return { words, start: 0, end: Math.min(windowSize, words.length) };
   }
 
-  const querySet = new Set(queryWords);
-  const matches = words.map((word) => querySet.has(normalizeWord(word)));
-
+  let bestScore = -1;
   let bestStart = 0;
-  let bestCount = -1;
-  let currentCount = 0;
 
-  for (let i = 0; i < words.length; i++) {
-    if (matches[i]) {
-      currentCount += 1;
-    }
+  for (let i = 0; i <= words.length - windowSize; i++) {
+    const windowWords = words.slice(i, i + windowSize);
+    const normalizedWindow = windowWords.map((w) => normalizeWord(w));
+    const score = queryWords.reduce((sum, qWord) => {
+      return sum + (normalizedWindow.includes(qWord) ? 1 : 0);
+    }, 0);
 
-    if (i >= windowSize) {
-      if (matches[i - windowSize]) {
-        currentCount -= 1;
-      }
-    }
-
-    if (i >= windowSize - 1) {
-      const start = i - windowSize + 1;
-      if (currentCount > bestCount) {
-        bestCount = currentCount;
-        bestStart = start;
-      }
+    if (score > bestScore) {
+      bestScore = score;
+      bestStart = i;
     }
   }
 
   return { words, start: bestStart, end: Math.min(bestStart + windowSize, words.length) };
 }
 
-export default function SongResults({ results, query, onLyricsClick }: SongResultsProps) {
+interface SongResultItemProps {
+  song: Song;
+  query: string;
+  onLyricsClick: (song: Song) => void;
+}
 
+const SongResultItem = memo(function SongResultItem({ song, query, onLyricsClick }: SongResultItemProps) {
+  const snippetData = useMemo(() => getSnippetWords(song.lyrics, query, 40), [song.lyrics, query]);
+  
+  const querySet = useMemo(() => 
+    new Set(
+      query
+        .split(/\s+/)
+        .map((word) => normalizeWord(word))
+        .filter(Boolean)
+    ), 
+    [query]
+  );
+
+  const handleClick = useCallback(() => {
+    onLyricsClick(song);
+  }, [song, onLyricsClick]);
+
+  return (
+    <div
+      key={song.id}
+      className="bg-white/20 rounded-lg p-4 hover:bg-white/30 transition-all"
+    >
+      <div className="flex items-start gap-4">
+        {song.imageUrl && (
+          <Image
+            src={song.imageUrl}
+            alt={song.title}
+            width={80}
+            height={80}
+            className="w-20 h-20 rounded-lg object-cover"
+            loading="lazy"
+          />
+        )}
+        <div className="flex-1">
+          <h3 className="text-xl font-bold text-white mb-1">
+            {song.title}
+          </h3>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-sm text-green-300 font-semibold">
+              {Math.round(song.matchScore * 100)}% Match
+            </span>
+            <span className="text-gray-400">•</span>
+            <span className="text-sm text-gray-300">ID: {song.id}</span>
+          </div>
+
+          {song.tags && (
+            <div className="flex flex-wrap gap-2 mb-3">
+              {song.tags.split(',').map((tag, index) => (
+                <span
+                  key={index}
+                  className="inline-block bg-purple-500/70 text-white text-xs px-2 py-1 rounded-full"
+                >
+                  {tag.trim()}
+                </span>
+              ))}
+            </div>
+          )}
+          
+          {song.lyrics && (
+            <button
+              type="button"
+              onClick={handleClick}
+              className="bg-black/30 rounded p-3 mt-2 text-left w-full hover:bg-black/40 transition-colors"
+            >
+              <p className="text-sm text-gray-300">
+                {(() => {
+                  const { words, start, end } = snippetData;
+                  const snippet = words.slice(start, end);
+                  const hasLeading = start > 0;
+                  const hasTrailing = end < words.length;
+
+                  return (
+                    <>
+                      {hasLeading && <span className="text-gray-500">... </span>}
+                      {snippet.map((word, index) => renderHighlightedToken(word, index, querySet))}
+                      {hasTrailing && <span className="text-gray-500">...</span>}
+                    </>
+                  );
+                })()}
+              </p>
+              <p className="text-xs text-gray-400 mt-2">Click to view full lyrics</p>
+            </button>
+          )}
+          
+          {song.audioUrl && (
+            <audio controls className="w-full mt-3">
+              <source src={song.audioUrl} type="audio/mpeg" />
+              Your browser does not support the audio element.
+            </audio>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+});
+
+interface SongResultsProps {
+  results: Song[];
+  query: string;
+  onLyricsClick: (song: Song) => void;
+}
+
+const SongResults = memo(function SongResults({ results, query, onLyricsClick }: SongResultsProps) {
   if (results.length === 0) {
     return null;
   }
@@ -98,89 +189,11 @@ export default function SongResults({ results, query, onLyricsClick }: SongResul
       
       <div className="space-y-4">
         {results.map((song) => (
-          <div
-            key={song.id}
-            className="bg-white/20 rounded-lg p-4 hover:bg-white/30 transition-all"
-          >
-            <div className="flex items-start gap-4">
-              {song.imageUrl && (
-                <Image
-                  src={song.imageUrl}
-                  alt={song.title}
-                  width={80}
-                  height={80}
-                  className="w-20 h-20 rounded-lg object-cover"
-                />
-              )}
-              <div className="flex-1">
-                <h3 className="text-xl font-bold text-white mb-1">
-                  {song.title}
-                </h3>
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-sm text-green-300 font-semibold">
-                    {Math.round(song.matchScore * 100)}% Match
-                  </span>
-                  <span className="text-gray-400">•</span>
-                  <span className="text-sm text-gray-300">ID: {song.id}</span>
-                </div>
-
-                {song.tags && (
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    {song.tags.split(',').map((tag, index) => (
-                      <span
-                        key={index}
-                        className="inline-block bg-purple-500/70 text-white text-xs px-2 py-1 rounded-full"
-                      >
-                        {tag.trim()}
-                      </span>
-                    ))}
-                  </div>
-                )}
-                
-                {song.lyrics && (
-                  <button
-                    type="button"
-                    onClick={() => onLyricsClick(song)}
-                    className="bg-black/30 rounded p-3 mt-2 text-left w-full hover:bg-black/40 transition-colors"
-                  >
-                    <p className="text-sm text-gray-300">
-                      {(() => {
-                        const { words, start, end } = getSnippetWords(song.lyrics, query, 40);
-                        const querySet = new Set(
-                          query
-                            .split(/\s+/)
-                            .map((word) => normalizeWord(word))
-                            .filter(Boolean)
-                        );
-
-                        const snippet = words.slice(start, end);
-                        const hasLeading = start > 0;
-                        const hasTrailing = end < words.length;
-
-                        return (
-                          <>
-                            {hasLeading && <span className="text-gray-500">... </span>}
-                            {snippet.map((word, index) => renderHighlightedToken(word, index, querySet))}
-                            {hasTrailing && <span className="text-gray-500">...</span>}
-                          </>
-                        );
-                      })()}
-                    </p>
-                    <p className="text-xs text-gray-400 mt-2">Click to view full lyrics</p>
-                  </button>
-                )}
-                
-                {song.audioUrl && (
-                  <audio controls className="w-full mt-3">
-                    <source src={song.audioUrl} type="audio/mpeg" />
-                    Your browser does not support the audio element.
-                  </audio>
-                )}
-              </div>
-            </div>
-          </div>
+          <SongResultItem key={song.id} song={song} query={query} onLyricsClick={onLyricsClick} />
         ))}
       </div>
     </div>
   );
-}
+});
+
+export default SongResults;

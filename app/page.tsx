@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo, useTransition } from 'react';
 import TextSearch from '@/components/TextSearch';
 import SongResults from '@/components/SongResults';
 import { calculateSimilarity } from '@/utils/similarity';
@@ -13,7 +13,9 @@ export default function Home() {
   const [isSearching, setIsSearching] = useState(false);
   const [isLoadingSongs, setIsLoadingSongs] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const [activeSong, setActiveSong] = useState<Song | null>(null);
+  const [isPending, startTransition] = useTransition();
   const fetchSunoPage = async (username: string, page: number) => {
     const url = `https://studio-api.prod.suno.com/api/profiles/${username}?clips_sort_by=created_at&playlists_sort_by=created_at&page=${page}`;
     const response = await fetch(url, {
@@ -30,7 +32,7 @@ export default function Home() {
     return response.json();
   };
 
-  const calculateResults = (query: string, songs: Song[]) => {
+  const calculateResults = useCallback((query: string, songs: Song[]) => {
     if (!query.trim() || songs.length === 0) {
       return [] as Song[];
     }
@@ -44,7 +46,7 @@ export default function Home() {
       .filter((song) => song.matchScore > 0)
       .sort((a, b) => b.matchScore - a.matchScore)
       .slice(0, 10);
-  };
+  }, []);
 
   // Load all songs from Suno API when username changes
   useEffect(() => {
@@ -126,21 +128,33 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, [sunoUsername]);
 
+  // Debounce search query updates (300ms after user stops typing)
   useEffect(() => {
-    if (!searchQuery.trim()) {
-      setSearchResults([]);
-      return;
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Memoize results calculation to avoid recalculating unless inputs change
+  const memoizedResults = useMemo(() => {
+    if (!debouncedSearchQuery.trim() || allSongs.length === 0) {
+      return [] as Song[];
     }
+    return calculateResults(debouncedSearchQuery, allSongs);
+  }, [debouncedSearchQuery, allSongs, calculateResults]);
 
-    setIsSearching(true);
-    const results = calculateResults(searchQuery, allSongs);
-    setSearchResults(results);
-    setIsSearching(false);
-  }, [allSongs, searchQuery]);
+  // Update results asynchronously with useTransition to prevent blocking input
+  useEffect(() => {
+    startTransition(() => {
+      setSearchResults(memoizedResults);
+    });
+  }, [memoizedResults]);
 
-  const handleSearch = (query: string) => {
+  const handleSearch = useCallback((query: string) => {
     setSearchQuery(query);
-  };
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
