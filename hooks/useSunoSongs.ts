@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { fetchAllSunoSongs } from '@/lib/suno';
+import { sunoService } from '@/services';
 import type { Song } from '@/types/speech';
 import { USERNAME_DEBOUNCE_MS } from '@/constants';
 
@@ -15,6 +15,7 @@ interface UseSunoSongsReturn {
 /**
  * Custom hook for loading songs from Suno API
  * Handles loading state, error handling, and progressive updates
+ * Uses sunoService for caching and business logic
  */
 export function useSunoSongs(initialUsername?: string): UseSunoSongsReturn {
   const [songs, setSongs] = useState<Song[]>([]);
@@ -35,7 +36,7 @@ export function useSunoSongs(initialUsername?: string): UseSunoSongsReturn {
     setError(null);
     
     try {
-      const fetchedSongs = await fetchAllSunoSongs(
+      const fetchedSongs = await sunoService.fetchUserSongs(
         trimmedUsername,
         (progressSongs) => {
           // Update UI with progressive results
