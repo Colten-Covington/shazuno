@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useMemo, useTransition, useDeferredVa
 import TextSearch from '@/components/TextSearch';
 import SongResults from '@/components/SongResults';
 import { calculateSimilarity } from '@/utils/similarity';
+import { fetchAllSunoSongs } from '@/lib/suno';
 import type { Song } from '@/types/speech';
 
 export default function Home() {
@@ -16,21 +17,6 @@ export default function Home() {
   const [isPending, startTransition] = useTransition();
   // Defer the search query to keep input responsive
   const deferredSearchQuery = useDeferredValue(searchQuery);
-  const fetchSunoPage = async (username: string, page: number) => {
-    const url = `https://studio-api.prod.suno.com/api/profiles/${username}?clips_sort_by=created_at&playlists_sort_by=created_at&page=${page}`;
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      return null;
-    }
-
-    return response.json();
-  };
 
   const calculateResults = useCallback((query: string, songs: Song[]) => {
     if (!query.trim() || songs.length === 0) {
@@ -60,58 +46,17 @@ export default function Home() {
 
       setIsLoadingSongs(true);
       try {
-        const normalizedUsername = sunoUsername.trim().toLowerCase();
-        let page = 0;
-        let emptyPages = 0;
-        let clips: Song[] = [];
-        const seenIds = new Set<string>();
-
-        while (emptyPages < 10) {
-          const data = await fetchSunoPage(normalizedUsername, page);
-
-          if (!data || !Object.prototype.hasOwnProperty.call(data, 'clips')) {
-            emptyPages += 1;
-            page += 1;
-            continue;
+        const songs = await fetchAllSunoSongs(
+          sunoUsername,
+          (progressSongs) => {
+            // Update UI with progressive results
+            setAllSongs([...progressSongs]);
           }
+        );
 
-          const pageClips = Array.isArray(data.clips) ? data.clips : [];
-
-          if (pageClips.length === 0) {
-            emptyPages += 1;
-            page += 1;
-            continue;
-          }
-
-          emptyPages = 0;
-          page += 1;
-
-          const mappedClips = pageClips
-            .map((clip: any) => ({
-              id: clip.id,
-              title: clip.title || 'Untitled',
-              lyrics: clip.metadata?.prompt || clip.metadata?.gpt_description_prompt || '',
-              audioUrl: clip.audio_url,
-              imageUrl: clip.image_large_url || clip.image_url,
-              tags: clip.metadata?.tags || '',
-              matchScore: 0,
-            }))
-            .filter((clip: Song) => {
-              if (!clip.id || seenIds.has(clip.id)) {
-                return false;
-              }
-
-              seenIds.add(clip.id);
-              return true;
-            });
-
-          clips = clips.concat(mappedClips);
-          setAllSongs([...clips]);
-        }
-
-        setAllSongs(clips);
+        setAllSongs(songs);
         if (searchQuery.trim()) {
-          setSearchResults(calculateResults(searchQuery, clips));
+          setSearchResults(calculateResults(searchQuery, songs));
         } else {
           setSearchResults([]);
         }
