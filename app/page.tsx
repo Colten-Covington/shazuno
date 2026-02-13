@@ -11,7 +11,7 @@ export default function Home() {
   const [sunoUsername, setSunoUsername] = useState(DEFAULT_SUNO_USERNAME);
   
   // Use custom hooks for song management and search
-  const { songs: allSongs, isLoading: isLoadingSongs, loadSongs } = useSunoSongs();
+  const { songs: allSongs, isLoading: isLoadingSongs, loadSongs } = useSunoSongs(DEFAULT_SUNO_USERNAME);
   const { searchQuery, searchResults, isPending, setSearchQuery } = useSongSearch(allSongs);
   const lyricsModal = useModal<Song>();
 
