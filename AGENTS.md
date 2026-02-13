@@ -2,6 +2,28 @@
 
 This file provides instructions for AI coding agents working on the Shazuno project.
 
+## Directory-Specific Guidance
+
+Each major directory has its own AGENTS.md file with targeted instructions. The **closest AGENTS.md to the file you're editing takes precedence**:
+
+| Directory | Purpose | AGENTS.md |
+|-----------|---------|-----------|
+| [/app](app/) | Next.js App Router pages & layouts | [app/AGENTS.md](app/AGENTS.md) |
+| [/components](components/) | Reusable React components | [components/AGENTS.md](components/AGENTS.md) |
+| [/lib](lib/) | Business logic & API clients | [lib/AGENTS.md](lib/AGENTS.md) |
+| [/utils](utils/) | Pure utility functions | [utils/AGENTS.md](utils/AGENTS.md) |
+| [/types](types/) | TypeScript type definitions | [types/AGENTS.md](types/AGENTS.md) |
+| [/hooks](hooks/) | Custom React hooks | [hooks/AGENTS.md](hooks/AGENTS.md) |
+| [/contexts](contexts/) | React Context providers | [contexts/AGENTS.md](contexts/AGENTS.md) |
+| [/constants](constants/) | App constants & config | [constants/AGENTS.md](constants/AGENTS.md) |
+| [/services](services/) | Service layer & orchestration | [services/AGENTS.md](services/AGENTS.md) |
+| [/middleware](middleware/) | Next.js middleware | [middleware/AGENTS.md](middleware/AGENTS.md) |
+| [/tests](tests/) | Test files (unit/integration/e2e) | [tests/AGENTS.md](tests/AGENTS.md) |
+| [/public](public/) | Static assets | [public/AGENTS.md](public/AGENTS.md) |
+| [/docs](docs/) | Project documentation | [docs/AGENTS.md](docs/AGENTS.md) |
+
+**Principle:** Read the directory-specific AGENTS.md for focused guidance on that part of the codebase.
+
 ## Project Overview
 
 **Shazuno** is a Shazam-like web application for searching songs from Suno.com using text or voice input.
