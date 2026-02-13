@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, memo } from 'react';
+import { useCallback, memo, useRef } from 'react';
 
 interface TextSearchProps {
   onSearch: (lyrics: string) => void;
@@ -9,23 +9,25 @@ interface TextSearchProps {
 }
 
 function TextSearchComponent({ onSearch, isSearching, songsLoaded }: TextSearchProps) {
-  const [lyrics, setLyrics] = useState('');
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
-    if (lyrics.trim() && songsLoaded > 0) {
-      onSearch(lyrics.trim());
+    const lyrics = textareaRef.current?.value.trim();
+    if (lyrics && songsLoaded > 0) {
+      onSearch(lyrics);
     }
-  }, [lyrics, songsLoaded, onSearch]);
+  }, [songsLoaded, onSearch]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
       e.preventDefault();
-      if (lyrics.trim() && songsLoaded > 0) {
-        onSearch(lyrics.trim());
+      const lyrics = textareaRef.current?.value.trim();
+      if (lyrics && songsLoaded > 0) {
+        onSearch(lyrics);
       }
     }
-  }, [lyrics, songsLoaded, onSearch]);
+  }, [songsLoaded, onSearch]);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4" noValidate>
@@ -34,9 +36,8 @@ function TextSearchComponent({ onSearch, isSearching, songsLoaded }: TextSearchP
           Enter Song Lyrics: <span className="inline-block text-gray-400 text-xs ml-2">(Press Ctrl+Enter to search)</span>
         </label>
         <textarea
+          ref={textareaRef}
           id="lyrics-input"
-          value={lyrics}
-          onChange={(e) => setLyrics(e.target.value)}
           onKeyDown={handleKeyDown}
           disabled={songsLoaded === 0}
           placeholder={songsLoaded === 0 ? "Loading songs..." : "Type or paste song lyrics here..."}
@@ -47,7 +48,7 @@ function TextSearchComponent({ onSearch, isSearching, songsLoaded }: TextSearchP
       </div>
       <button
         type="submit"
-        disabled={!lyrics.trim() || isSearching || songsLoaded === 0}
+        disabled={isSearching || songsLoaded === 0}
         className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 px-4 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
       >
         {isSearching ? (
