@@ -13,7 +13,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <a href="#main-content" className="sr-only">
+          Skip to main content
+        </a>
+        {children}
+      </body>
     </html>
   );
 }

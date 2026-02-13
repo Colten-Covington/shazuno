@@ -42,25 +42,28 @@ function TextSearchComponent({ onSearch, isSearching, songsLoaded }: TextSearchP
           rows={6}
           className="w-full px-4 py-3 rounded-lg bg-white/20 text-white placeholder-gray-400 border border-white/30 focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label="Song lyrics input"
+          aria-describedby="lyrics-hint"
         />
+        <p id="lyrics-hint" className="sr-only">Enter or paste the lyrics of a song you want to find. Press Ctrl+Enter or use the search button to start searching.</p>
       </div>
       <button
         type="submit"
         disabled={isSearching || songsLoaded === 0}
-        className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 px-4 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+        className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 px-4 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-300"
+        aria-label={isSearching ? 'Searching for matching songs' : songsLoaded === 0 ? 'Waiting for songs to load' : 'Search for songs'}
       >
         {isSearching ? (
           <span className="flex items-center justify-center">
-            <svg className="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
+            <svg className="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24" aria-hidden="true">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
             </svg>
             Searching...
           </span>
         ) : songsLoaded === 0 ? (
-          '⏳ Loading songs...'
+          <span><span role="img" aria-label="Hourglass">⏳</span> Loading songs...</span>
         ) : (
-          '🔍 Search Songs'
+          <span><span role="img" aria-label="Magnifying glass">🔍</span> Search Songs</span>
         )}
       </button>
     </form>

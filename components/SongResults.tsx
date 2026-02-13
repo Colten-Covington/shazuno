@@ -92,15 +92,15 @@ const SongResultItem = memo(function SongResultItem({ song, query, onLyricsClick
   }, [song, onLyricsClick]);
 
   return (
-    <div
-      key={song.id}
+    <article
       className="bg-white/20 rounded-lg p-4 hover:bg-white/30 transition-all"
+      aria-label={`Song result: ${song.title}`}
     >
       <div className="flex items-start gap-4">
         {song.imageUrl && (
           <Image
             src={song.imageUrl}
-            alt={song.title}
+            alt={`Album artwork for ${song.title}`}
             width={80}
             height={80}
             className="w-20 h-20 rounded-lg object-cover"
@@ -115,28 +115,29 @@ const SongResultItem = memo(function SongResultItem({ song, query, onLyricsClick
             <span className="text-sm text-green-300 font-semibold">
               {Math.round(song.matchScore * 100)}% Match
             </span>
-            <span className="text-gray-400">•</span>
+            <span className="text-gray-400" aria-hidden="true">•</span>
             <span className="text-sm text-gray-300">ID: {song.id}</span>
           </div>
 
           {song.tags && (
-            <div className="flex flex-wrap gap-2 mb-3">
+            <ul className="flex flex-wrap gap-2 mb-3" aria-label="Song tags">
               {song.tags.split(',').map((tag, index) => (
-                <span
+                <li
                   key={index}
                   className="inline-block bg-purple-500/70 text-white text-xs px-2 py-1 rounded-full"
                 >
                   {tag.trim()}
-                </span>
+                </li>
               ))}
-            </div>
+            </ul>
           )}
           
           {song.lyrics && (
             <button
               type="button"
               onClick={handleClick}
-              className="bg-black/30 rounded p-3 mt-2 text-left w-full hover:bg-black/40 transition-colors"
+              className="bg-black/30 rounded p-3 mt-2 text-left w-full hover:bg-black/40 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-300"
+              aria-label={`View full lyrics for ${song.title}`}
             >
               <p className="text-sm text-gray-300">
                 {(() => {
@@ -147,9 +148,9 @@ const SongResultItem = memo(function SongResultItem({ song, query, onLyricsClick
 
                   return (
                     <>
-                      {hasLeading && <span className="text-gray-500">... </span>}
+                      {hasLeading && <span className="text-gray-500" aria-hidden="true">... </span>}
                       {snippet.map((word, index) => renderHighlightedToken(word, index, querySet))}
-                      {hasTrailing && <span className="text-gray-500">...</span>}
+                      {hasTrailing && <span className="text-gray-500" aria-hidden="true">...</span>}
                     </>
                   );
                 })()}
@@ -159,14 +160,14 @@ const SongResultItem = memo(function SongResultItem({ song, query, onLyricsClick
           )}
           
           {song.audioUrl && (
-            <audio controls className="w-full mt-3">
+            <audio controls className="w-full mt-3" aria-label={`Audio player for ${song.title}`}>
               <source src={song.audioUrl} type="audio/mpeg" />
               Your browser does not support the audio element.
             </audio>
           )}
         </div>
       </div>
-    </div>
+    </article>
   );
 });
 
@@ -182,17 +183,17 @@ const SongResults = memo(function SongResults({ results, query, onLyricsClick }:
   }
 
   return (
-    <div className="bg-white/10 backdrop-blur-lg rounded-lg p-6 shadow-xl">
-      <h2 className="text-2xl font-bold text-white mb-4">
-        🎵 Found {results.length} {results.length === 1 ? 'Match' : 'Matches'}
+    <section className="bg-white/10 backdrop-blur-lg rounded-lg p-6 shadow-xl" aria-labelledby="results-heading">
+      <h2 id="results-heading" className="text-2xl font-bold text-white mb-4">
+        <span role="img" aria-label="Musical notes">🎵</span> Found {results.length} {results.length === 1 ? 'Match' : 'Matches'}
       </h2>
       
-      <div className="space-y-4">
+      <div className="space-y-4" role="feed" aria-busy="false">
         {results.map((song) => (
           <SongResultItem key={song.id} song={song} query={query} onLyricsClick={onLyricsClick} />
         ))}
       </div>
-    </div>
+    </section>
   );
 });
 
