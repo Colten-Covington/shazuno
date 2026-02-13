@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo, useTransition } from 'react';
+import { useState, useEffect, useCallback, useMemo, useTransition, useRef, useDeferredValue } from 'react';
 import TextSearch from '@/components/TextSearch';
 import SongResults from '@/components/SongResults';
 import { calculateSimilarity } from '@/utils/similarity';
@@ -13,9 +13,11 @@ export default function Home() {
   const [isSearching, setIsSearching] = useState(false);
   const [isLoadingSongs, setIsLoadingSongs] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const [activeSong, setActiveSong] = useState<Song | null>(null);
   const [isPending, startTransition] = useTransition();
+  const searchQueryRef = useRef<string>('');
+  // Defer the search query to keep input responsive
+  const deferredSearchQuery = useDeferredValue(searchQuery);
   const fetchSunoPage = async (username: string, page: number) => {
     const url = `https://studio-api.prod.suno.com/api/profiles/${username}?clips_sort_by=created_at&playlists_sort_by=created_at&page=${page}`;
     const response = await fetch(url, {
@@ -128,31 +130,25 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, [sunoUsername]);
 
-  // Debounce search query updates (300ms after user stops typing)
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearchQuery(searchQuery);
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
-
+  // Use useDeferredValue instead of debouncing - React handles the timing optimally
   // Memoize results calculation to avoid recalculating unless inputs change
   const memoizedResults = useMemo(() => {
-    if (!debouncedSearchQuery.trim() || allSongs.length === 0) {
-      return [] as Song[];
+    if (!deferredSearchQuery || allSongs.length === 0) {
+      return [];
     }
-    return calculateResults(debouncedSearchQuery, allSongs);
-  }, [debouncedSearchQuery, allSongs, calculateResults]);
+    return calculateResults(deferredSearchQuery, allSongs);
+  }, [deferredSearchQuery, allSongs, calculateResults]);
 
   // Update results asynchronously with useTransition to prevent blocking input
   useEffect(() => {
     startTransition(() => {
       setSearchResults(memoizedResults);
     });
-  }, [memoizedResults]);
+  }, [memoizedResults, startTransition]);
 
   const handleSearch = useCallback((query: string) => {
+    searchQueryRef.current = query;
+    // Direct update without startTransition - useDeferredValue handles the deferral
     setSearchQuery(query);
   }, []);
 
