@@ -104,8 +104,8 @@ const SongResultItem = memo(function SongResultItem({ song, query, onLyricsClick
             alt={`Album artwork for ${song.title}`}
             width={80}
             height={80}
-            className="w-20 h-20 rounded-lg object-cover"
-            loading="lazy"
+            className="w-20 h-20 rounded-lg object-cover flex-shrink-0"
+            sizes="80px"
           />
         )}
         <div className="flex-1">
