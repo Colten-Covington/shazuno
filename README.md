@@ -2,6 +2,16 @@
 
 A Shazam-like web application for searching and identifying songs from Suno.com. This application allows users to search through a Suno artist's song library by providing lyrics in text or voice, using an intelligent word-overlap matching algorithm.
 
+## 🤖 For AI Agents
+
+**See [AGENTS.md](AGENTS.md)** for complete agent instructions following the [Agentic AI Foundation](https://agents.md) standard format.
+
+Quick links:
+- [Build & Test Commands](AGENTS.md#build-and-test-commands)
+- [Code Style Guidelines](AGENTS.md#code-style-guidelines)  
+- [Security Considerations](AGENTS.md#security-considerations)
+- [Specialized Agents](.github/agents/README.md)
+
 ## Features
 
 - 🎤 **Voice Recognition**: Record or speak song lyrics using your microphone with real-time Web Speech API transcription
@@ -97,6 +107,24 @@ pnpm start
 - **API**: Direct Suno.com API integration (client-side)
 - **State Management**: React Hooks (useState, useEffect)
 
+## Documentation
+
+Comprehensive documentation is available in the `/docs` directory:
+
+- **[Architecture Documentation](docs/ARCHITECTURE.md)** - System design, data flow, and architectural decisions
+- **[Technology Stack](docs/TECH_STACK.md)** - Detailed information about all technologies, frameworks, and libraries used
+- **[Code Structure](docs/CODE_STRUCTURE.md)** - Complete breakdown of the codebase organization and file purposes
+- **[Development Guide](docs/DEVELOPMENT.md)** - Setup instructions, coding standards, and best practices
+- **[Contributing Guidelines](CONTRIBUTING.md)** - How to contribute to the project
+- **[Security Documentation](SECURITY.md)** - Security practices and vulnerability remediation
+- **[Implementation Summary](IMPLEMENTATION.md)** - Feature overview and testing results
+
+### For Developers & AI Agents
+
+- **[GitHub Copilot Instructions](.github/copilot-instructions.md)** - Guidelines for GitHub Copilot and other AI coding assistants
+- **[VS Code Settings](.vscode/settings.json)** - Recommended workspace settings
+- **[Code Snippets](.vscode/shazuno.code-snippets)** - Common code patterns and templates
+
 ## Browser Compatibility
 
 - **Voice Recognition**: Chrome, Edge, and Safari (most reliable)
@@ -105,7 +133,13 @@ pnpm start
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) to get started.
+
+Key resources for contributors:
+1. Read the [Architecture Documentation](docs/ARCHITECTURE.md) to understand the system
+2. Follow the [Development Guide](docs/DEVELOPMENT.md) for setup and standards
+3. Check the [Technology Stack](docs/TECH_STACK.md) for framework details
+4. Review [GitHub Copilot Instructions](.github/copilot-instructions.md) for coding patterns
 
 ## License
 

@@ -1,0 +1,175 @@
+{
+  "Next.js Client Component": {
+    "prefix": "ncc",
+    "body": [
+      "'use client';",
+      "",
+      "import { useState } from 'react';",
+      "",
+      "interface ${1:ComponentName}Props {",
+      "  ${2:prop}: ${3:string};",
+      "}",
+      "",
+      "export default function ${1:ComponentName}({ ${2:prop} }: ${1:ComponentName}Props) {",
+      "  const [state, setState] = useState(${4:''});",
+      "  ",
+      "  return (",
+      "    <div className=\"${5:p-4}\">",
+      "      $0",
+      "    </div>",
+      "  );",
+      "}"
+    ],
+    "description": "Create a Next.js client component with TypeScript"
+  },
+  "React useState Hook": {
+    "prefix": "ust",
+    "body": [
+      "const [${1:state}, set${1/(.*)/${1:/capitalize}/}] = useState${2:<${3:type}>}(${4:initialValue});"
+    ],
+    "description": "React useState hook with TypeScript"
+  },
+  "React useEffect Hook": {
+    "prefix": "uef",
+    "body": [
+      "useEffect(() => {",
+      "  ${1:// Effect code}",
+      "  ",
+      "  return () => {",
+      "    ${2:// Cleanup code}",
+      "  };",
+      "}, [${3:dependencies}]);"
+    ],
+    "description": "React useEffect hook with cleanup"
+  },
+  "React useCallback Hook": {
+    "prefix": "ucb",
+    "body": [
+      "const ${1:handleAction} = useCallback(($2) => {",
+      "  ${3:// Function body}",
+      "}, [${4:dependencies}]);"
+    ],
+    "description": "React useCallback hook"
+  },
+  "React useMemo Hook": {
+    "prefix": "umm",
+    "body": [
+      "const ${1:memoizedValue} = useMemo(() => {",
+      "  ${2:// Expensive calculation}",
+      "  return ${3:result};",
+      "}, [${4:dependencies}]);"
+    ],
+    "description": "React useMemo hook"
+  },
+  "TypeScript Interface": {
+    "prefix": "tsi",
+    "body": [
+      "interface ${1:InterfaceName} {",
+      "  ${2:property}: ${3:type};",
+      "  ${4:optional}?: ${5:type};",
+      "}"
+    ],
+    "description": "TypeScript interface definition"
+  },
+  "Async Function with Try-Catch": {
+    "prefix": "asf",
+    "body": [
+      "async function ${1:functionName}(${2:params}): Promise<${3:ReturnType}> {",
+      "  try {",
+      "    ${4:// Implementation}",
+      "  } catch (error) {",
+      "    console.error('Error in ${1:functionName}:', error);",
+      "    ${5:return null;}",
+      "  }",
+      "}"
+    ],
+    "description": "Async function with error handling"
+  },
+  "Tailwind Button": {
+    "prefix": "twbtn",
+    "body": [
+      "<button",
+      "  onClick={${1:handleClick}}",
+      "  disabled={${2:false}}",
+      "  className=\"px-4 py-2 bg-${3:blue}-500 hover:bg-${3:blue}-600 text-white rounded-lg focus:ring-2 focus:ring-${3:blue}-300 disabled:opacity-50 transition-colors\"",
+      ">",
+      "  ${4:Button Text}",
+      "</button>"
+    ],
+    "description": "Tailwind CSS button with common classes"
+  },
+  "Accessible Section": {
+    "prefix": "a11ysection",
+    "body": [
+      "<section aria-labelledby=\"${1:section}-heading\">",
+      "  <h2 id=\"${1:section}-heading\" className=\"${2:sr-only}\">${3:Section Title}</h2>",
+      "  ${4:<!-- Content -->}",
+      "</section>"
+    ],
+    "description": "Accessible section with proper ARIA labeling"
+  },
+  "Form Input with Label": {
+    "prefix": "forminput",
+    "body": [
+      "<label htmlFor=\"${1:input-id}\" className=\"block text-sm font-medium mb-2\">",
+      "  ${2:Label Text}",
+      "</label>",
+      "<input",
+      "  id=\"${1:input-id}\"",
+      "  type=\"${3:text}\"",
+      "  value={${4:value}}",
+      "  onChange={(e) => set${4/(.*)/${1:/capitalize}/}(e.target.value)}",
+      "  className=\"w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-${5:blue}-500\"",
+      "  placeholder=\"${6:Placeholder}\"",
+      "/>"
+    ],
+    "description": "Accessible form input with label"
+  },
+  "JSDoc Function Comment": {
+    "prefix": "jsdoc",
+    "body": [
+      "/**",
+      " * ${1:Brief description of function}",
+      " * @param ${2:param1} - ${3:Description of param1}",
+      " * @param ${4:param2} - ${5:Description of param2}",
+      " * @returns ${6:Description of return value}",
+      " */"
+    ],
+    "description": "JSDoc function documentation"
+  },
+  "Map for Deduplication": {
+    "prefix": "mapdedup",
+    "body": [
+      "const ${1:items}Map = new Map<string, ${2:ItemType}>();",
+      "${3:array}.forEach((item) => {",
+      "  ${1:items}Map.set(item.id, item);",
+      "});",
+      "const ${1:items} = Array.from(${1:items}Map.values());"
+    ],
+    "description": "Map-based deduplication pattern"
+  },
+  "Debounced Effect": {
+    "prefix": "debounce",
+    "body": [
+      "useEffect(() => {",
+      "  const timer = setTimeout(() => {",
+      "    ${1:// Debounced action}",
+      "  }, ${2:500});",
+      "  ",
+      "  return () => clearTimeout(timer);",
+      "}, [${3:dependency}]);"
+    ],
+    "description": "Debounced effect with cleanup"
+  },
+  "useTransition for Non-blocking Updates": {
+    "prefix": "utr",
+    "body": [
+      "const [isPending, startTransition] = useTransition();",
+      "",
+      "startTransition(() => {",
+      "  ${1:// Non-blocking state update}",
+      "});"
+    ],
+    "description": "React 18 useTransition for non-blocking updates"
+  }
+}
