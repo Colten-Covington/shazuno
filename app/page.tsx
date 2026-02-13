@@ -1,99 +1,25 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo, useTransition, useDeferredValue } from 'react';
+import { useState } from 'react';
 import TextSearch from '@/components/TextSearch';
 import SongResults from '@/components/SongResults';
-import { calculateSimilarity } from '@/utils/similarity';
-import { fetchAllSunoSongs } from '@/lib/suno';
 import type { Song } from '@/types/speech';
-import { DEFAULT_SUNO_USERNAME, USERNAME_DEBOUNCE_MS, MAX_SEARCH_RESULTS } from '@/constants';
+import { DEFAULT_SUNO_USERNAME } from '@/constants';
+import { useSunoSongs, useSongSearch, useModal } from '@/hooks';
 
 export default function Home() {
   const [sunoUsername, setSunoUsername] = useState(DEFAULT_SUNO_USERNAME);
-  const [allSongs, setAllSongs] = useState<Song[]>([]);
-  const [searchResults, setSearchResults] = useState<Song[]>([]);
-  const [isLoadingSongs, setIsLoadingSongs] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [activeSong, setActiveSong] = useState<Song | null>(null);
-  const [isPending, startTransition] = useTransition();
-  // Defer the search query to keep input responsive
-  const deferredSearchQuery = useDeferredValue(searchQuery);
+  
+  // Use custom hooks for song management and search
+  const { songs: allSongs, isLoading: isLoadingSongs, loadSongs } = useSunoSongs();
+  const { searchQuery, searchResults, isPending, setSearchQuery } = useSongSearch(allSongs);
+  const lyricsModal = useModal<Song>();
 
-  const calculateResults = useCallback((query: string, songs: Song[]) => {
-    if (!query.trim() || songs.length === 0) {
-      return [] as Song[];
-    }
-
-    const scoredSongs = songs.map((song) => ({
-      ...song,
-      matchScore: calculateSimilarity(song.lyrics, query),
-    }));
-
-    return scoredSongs
-      .filter((song) => song.matchScore > 0)
-      .sort((a, b) => b.matchScore - a.matchScore)
-      .slice(0, MAX_SEARCH_RESULTS);
-  }, []);
-
-  // Load all songs from Suno API when username changes
-  useEffect(() => {
-    const loadSongs = async () => {
-      if (!sunoUsername.trim()) {
-        setAllSongs([]);
-        setSearchResults([]);
-        setSearchQuery('');
-        return;
-      }
-
-      setIsLoadingSongs(true);
-      try {
-        const songs = await fetchAllSunoSongs(
-          sunoUsername,
-          (progressSongs) => {
-            // Update UI with progressive results
-            setAllSongs(progressSongs);
-          }
-        );
-
-        setAllSongs(songs);
-        if (searchQuery.trim()) {
-          setSearchResults(calculateResults(searchQuery, songs));
-        } else {
-          setSearchResults([]);
-        }
-      } catch (error) {
-        console.error('Error loading songs:', error);
-        alert('Error loading songs');
-      } finally {
-        setIsLoadingSongs(false);
-      }
-    };
-
-    // Debounce the load to avoid too many requests while typing
-    const timer = setTimeout(loadSongs, USERNAME_DEBOUNCE_MS);
-    return () => clearTimeout(timer);
-  }, [sunoUsername]);
-
-  // Use useDeferredValue instead of debouncing - React handles the timing optimally
-  // Memoize results calculation to avoid recalculating unless inputs change
-  const memoizedResults = useMemo(() => {
-    if (!deferredSearchQuery || allSongs.length === 0) {
-      return [];
-    }
-    return calculateResults(deferredSearchQuery, allSongs);
-  }, [deferredSearchQuery, allSongs, calculateResults]);
-
-  // Update results asynchronously with useTransition to prevent blocking input
-  useEffect(() => {
-    startTransition(() => {
-      setSearchResults(memoizedResults);
-    });
-  }, [memoizedResults, startTransition]);
-
-  const handleSearch = useCallback((query: string) => {
-    // Direct update without startTransition - useDeferredValue handles the deferral
-    setSearchQuery(query);
-  }, []);
+  // Load songs when username changes
+  const handleUsernameChange = (newUsername: string) => {
+    setSunoUsername(newUsername);
+    loadSongs(newUsername);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
@@ -131,7 +57,7 @@ export default function Home() {
               id="suno-username-input"
               type="text"
               value={sunoUsername}
-              onChange={(e) => setSunoUsername(e.target.value)}
+              onChange={(e) => handleUsernameChange(e.target.value)}
               placeholder="Enter Suno.com username"
               className="w-full px-4 py-2 rounded-lg bg-white/20 text-white placeholder-gray-400 border border-white/30 focus:outline-none focus:ring-2 focus:ring-purple-500"
               aria-describedby="username-status"
@@ -151,23 +77,23 @@ export default function Home() {
           {/* Search */}
           <section className="bg-white/10 backdrop-blur-lg rounded-lg p-6 mb-6 shadow-xl" aria-labelledby="search-heading">
             <h2 id="search-heading" className="sr-only">Search Songs by Lyrics</h2>
-            <TextSearch onSearch={handleSearch} isSearching={isPending} songsLoaded={allSongs.length} />
+            <TextSearch onSearch={setSearchQuery} isSearching={isPending} songsLoaded={allSongs.length} />
           </section>
 
           {/* Results */}
           {searchResults.length > 0 && (
-            <SongResults results={searchResults} query={searchQuery} onLyricsClick={setActiveSong} />
+            <SongResults results={searchResults} query={searchQuery} onLyricsClick={lyricsModal.open} />
           )}
         </main>
       </div>
 
-      {activeSong && (
+      {lyricsModal.isOpen && lyricsModal.data && (
         <div
           className="fixed top-0 left-0 w-screen h-screen bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
           role="dialog"
           aria-modal="true"
           aria-labelledby="modal-title"
-          onClick={() => setActiveSong(null)}
+          onClick={lyricsModal.close}
         >
           <div
             className="bg-slate-900 text-white rounded-lg w-full max-w-3xl h-[80vh] p-6 shadow-2xl flex flex-col"
@@ -175,19 +101,19 @@ export default function Home() {
           >
             <div className="flex items-start justify-between gap-4 mb-4">
               <div>
-                <h3 id="modal-title" className="text-2xl font-bold">{activeSong.title}</h3>
+                <h3 id="modal-title" className="text-2xl font-bold">{lyricsModal.data.title}</h3>
                 <p className="text-sm text-gray-400">Full lyrics</p>
               </div>
               <button
                 type="button"
-                onClick={() => setActiveSong(null)}
+                onClick={lyricsModal.close}
                 className="text-gray-300 hover:text-white focus:ring-2 focus:ring-white rounded px-3 py-1"
               >
                 <span aria-hidden="true">✕</span> Close
               </button>
             </div>
             <div className="bg-black/40 rounded-lg p-4 overflow-y-auto whitespace-pre-wrap text-sm text-gray-200" role="document">
-              {(activeSong.lyrics || '')
+              {(lyricsModal.data.lyrics || '')
                 .replace(/\r\n/g, '\n')
                 .replace(/\/n/g, '\n')}
             </div>
