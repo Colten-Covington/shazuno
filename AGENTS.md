@@ -386,6 +386,67 @@ Description of work completed
 - What to remember for next time
 ```
 
+## Self-Improvement Protocol 🔄
+
+**After completing any task, invest in future productivity:**
+
+### Why Self-Improve?
+Every task is an opportunity to make the next task easier. By documenting learnings immediately, we prevent repeating mistakes and build institutional knowledge.
+
+### Quick Self-Improvement Checklist
+
+After completing work:
+1. ✅ **Reflect** - What changed? What was learned?
+2. ✅ **Document** - Update relevant AGENTS.md with patterns
+3. ✅ **Add Examples** - Use real code from your changes
+4. ✅ **Mark Anti-Patterns** - Document what NOT to do
+5. ✅ **Verify** - Check documentation is accurate
+
+### What to Update
+
+**Always update at minimum:**
+- Relevant AGENTS.md file (root or directory)
+- Add one real code example
+- Document one pattern or anti-pattern
+
+**For significant work, also update:**
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for system changes
+- [docs/DESIGN_PATTERNS.md](docs/DESIGN_PATTERNS.md) for new patterns
+- [docs/BEST_PRACTICES.md](docs/BEST_PRACTICES.md) for standards
+- In-code JSDoc comments for complex functions
+
+### Documentation Best Practices
+
+When updating AGENTS.md or docs:
+- ✅ **Use real examples** from the codebase (file names, line numbers)
+- ✅ **Show comparisons** (✅ correct vs ❌ wrong)
+- ✅ **Explain "why"** not just "what"
+- ✅ **Add visual indicators** (⚠️ warnings, 💡 tips)
+- ✅ **Cross-reference** related documentation
+- ✅ **Test examples** - verify code actually works
+
+### Example Pattern Documentation
+
+```markdown
+## Pattern Discovered: Hook Initialization
+
+**Problem:** Hooks with useEffect don't trigger on mount without initial values
+**Solution:** Pass initial parameters to hooks
+
+**Example:**
+✅ Correct: `useSunoSongs(DEFAULT_SUNO_USERNAME)` - loads immediately
+❌ Wrong: `useSunoSongs()` - never triggers useEffect
+
+**Why:** Empty string doesn't pass `if (value)` checks in useEffect
+```
+
+### Comprehensive Guide
+
+For detailed self-improvement guidance, see:
+📚 **[docs/SELF-IMPROVEMENT.md](docs/SELF-IMPROVEMENT.md)** - Complete protocol with templates and examples
+
+**Remember:** You're not just writing code. You're building knowledge for future agents!
+
 ## Quick Reference
 
 ### File Naming
