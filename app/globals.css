@@ -39,8 +39,7 @@ body {
   border-width: 0;
 }
 
-.sr-only:focus,
-.sr-only:active {
+.sr-only:focus {
   position: static;
   width: auto;
   height: auto;
