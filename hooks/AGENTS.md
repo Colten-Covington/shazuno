@@ -4,7 +4,74 @@
 
 ## What This Directory Contains
 
-Custom hooks that encapsulate reusable React logic.
+Custom hooks that encapsulate reusable React logic. Hooks should **consume services, not lib directly**.
+
+## Architecture Layering ⚠️
+
+**Correct Pattern:**
+```
+Hook → Service → Lib → API
+```
+
+**Example from this codebase:**
+```typescript
+// ✅ CORRECT: Hook uses service layer
+import { sunoService } from '@/services';
+
+export function useSunoSongs(initialUsername?: string) {
+  // Hook calls service, which provides caching
+  const songs = await sunoService.fetchUserSongs(username, onProgress);
+}
+```
+
+**Anti-pattern:**
+```typescript
+// ❌ WRONG: Hook bypasses service layer
+import { fetchAllSunoSongs } from '@/lib/suno';
+
+export function useSunoSongs() {
+  // Missing caching, error handling from service
+  const songs = await fetchAllSunoSongs(username);
+}
+```
+
+## Hook Initialization Best Practice
+
+**Hooks with useEffect need initial values to trigger on mount:**
+
+```typescript
+// ✅ CORRECT: Pass initial value
+export function useSunoSongs(initialUsername?: string) {
+  const [username, setUsername] = useState(initialUsername || '');
+  
+  useEffect(() => {
+    if (username) {
+      // This runs on mount if initialUsername provided
+      loadData(username);
+    }
+  }, [username]);
+}
+
+// Usage
+const hook = useSunoSongs('beginbot'); // Loads immediately
+```
+
+```typescript
+// ❌ WRONG: No initial value
+export function useSunoSongs() {
+  const [username, setUsername] = useState(''); // Empty!
+  
+  useEffect(() => {
+    if (username) {
+      // This never runs on mount
+      loadData(username);
+    }
+  }, [username]);
+}
+
+// Usage
+const hook = useSunoSongs(); // Nothing loads
+```
 
 ## Patterns
 
@@ -12,18 +79,52 @@ Custom hooks that encapsulate reusable React logic.
 ```typescript
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { someService } from '@/services'; // Use services, not lib!
 
-export function useCustomHook(param: string) {
-  const [state, setState] = useState<Type>(initialValue);
+interface UseCustomHookReturn {
+  data: Type[];
+  isLoading: boolean;
+  error: string | null;
+  refresh: () => void;
+}
+
+export function useCustomHook(initialValue?: string): UseCustomHookReturn {
+  const [data, setData] = useState<Type[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [value, setValue] = useState(initialValue || '');
+  
+  const loadData = useCallback(async (val: string) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      // Call service, not lib!
+      const result = await someService.fetchData(val);
+      setData(result);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error');
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
   
   useEffect(() => {
-    // Effect logic
-  }, [param]);
+    if (value) {
+      loadData(value);
+    }
+  }, [value, loadData]);
   
-  return { state, setState };
+  return { data, isLoading, error, refresh: () => loadData(value) };
 }
 ```
+
+### Common Hooks in This Project
+
+- **useSpeechRecognition** - Web Speech API wrapper
+- **useSunoSongs** - Song loading with service layer caching
+- **useSongSearch** - Search with deferred values
+- **useModal** - Generic modal state management
 
 ### Common Hooks to Create
 
@@ -39,24 +140,8 @@ export function useCustomHook(param: string) {
 - One hook per file
 - Export as named export
 
-## Example: useDebounce
-
-```typescript
-import { useState, useEffect } from 'react';
-
-export function useDebounce<T>(value: T, delay: number = 500): T {
-  const [debouncedValue, setDebouncedValue] = useState<T>(value);
-  
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedValue(value), delay);
-    return () => clearTimeout(timer);
-  }, [value, delay]);
-  
-  return debouncedValue;
-}
-```
-
 ## References
 
 - [Root AGENTS.md](/AGENTS.md)
+- [services/AGENTS.md](../services/AGENTS.md) - Service layer guidance
 - [React Patterns](.github/skills/react-patterns.md)
