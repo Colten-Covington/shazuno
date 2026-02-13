@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, memo, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 
 interface TextSearchProps {
   onSearch: (lyrics: string) => void;
@@ -10,6 +10,7 @@ interface TextSearchProps {
 
 function TextSearchComponent({ onSearch, isSearching, songsLoaded }: TextSearchProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
@@ -19,18 +20,15 @@ function TextSearchComponent({ onSearch, isSearching, songsLoaded }: TextSearchP
     }
   }, [songsLoaded, onSearch]);
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
       e.preventDefault();
-      const lyrics = textareaRef.current?.value.trim();
-      if (lyrics && songsLoaded > 0) {
-        onSearch(lyrics);
-      }
+      formRef.current?.requestSubmit();
     }
-  }, [songsLoaded, onSearch]);
+  };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+    <form ref={formRef} onSubmit={handleSubmit} className="space-y-4" noValidate>
       <div>
         <label htmlFor="lyrics-input" className="block text-white text-sm font-bold mb-2">
           Enter Song Lyrics: <span className="inline-block text-gray-400 text-xs ml-2">(Press Ctrl+Enter to search)</span>
@@ -69,4 +67,4 @@ function TextSearchComponent({ onSearch, isSearching, songsLoaded }: TextSearchP
   );
 }
 
-export default memo(TextSearchComponent);
+export default TextSearchComponent;
