@@ -2,6 +2,22 @@
 
 This file provides context and guidelines for GitHub Copilot when working on the Shazuno codebase.
 
+## Agent System
+
+For specialized tasks, refer to the **Agent System**:
+- **[Agent Registry](agents/README.md)** - Overview of available agents and their capabilities
+- **[Skills Library](skills/README.md)** - Reusable knowledge modules for agents
+
+### Quick Agent Reference
+
+| Task Type | Agent | Skills |
+|-----------|-------|--------|
+| General coding | [Coding Agent](agents/coding-agent.md) | React, TypeScript, API Integration |
+| Accessibility | [Accessibility Agent](agents/accessibility-agent.md) | Accessibility, React |
+| Code refactoring | See agents/README.md | React, TypeScript |
+| Documentation | See agents/README.md | All (for reference) |
+| Testing | See agents/README.md | Testing, React |
+
 ## Project Overview
 
 Shazuno is a Shazam-like web application for searching songs from Suno.com using text or voice input. It's built with Next.js 15, React 18, TypeScript, and Tailwind CSS, following modern web development best practices with a focus on accessibility and performance.

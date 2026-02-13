@@ -2,6 +2,16 @@
 
 A Shazam-like web application for searching and identifying songs from Suno.com. This application allows users to search through a Suno artist's song library by providing lyrics in text or voice, using an intelligent word-overlap matching algorithm.
 
+## 🤖 For AI Agents
+
+**See [AGENTS.md](AGENTS.md)** for complete agent instructions following the [Agentic AI Foundation](https://agents.md) standard format.
+
+Quick links:
+- [Build & Test Commands](AGENTS.md#build-and-test-commands)
+- [Code Style Guidelines](AGENTS.md#code-style-guidelines)  
+- [Security Considerations](AGENTS.md#security-considerations)
+- [Specialized Agents](.github/agents/README.md)
+
 ## Features
 
 - 🎤 **Voice Recognition**: Record or speak song lyrics using your microphone with real-time Web Speech API transcription
