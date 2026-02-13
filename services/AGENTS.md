@@ -10,6 +10,8 @@ Service classes/modules that orchestrate multiple operations or wrap external AP
 - **Business logic** - Orchestration and validation
 - **State management** - Stateful operations
 
+Currently empty - add your services here as needed.
+
 ## Architecture Layering ⚠️
 
 Services sit between hooks and lib:
@@ -22,62 +24,68 @@ Component → Hook → Service → Lib → API
 
 | Layer | Purpose | Examples | Contains |
 |-------|---------|----------|----------|
-| **lib/** | Simple API clients | `fetchSunoPage()` | Fetch calls, data mapping |
-| **services/** | Business logic | `sunoService.fetchUserSongs()` | Caching, validation, orchestration |
-| **hooks/** | React state | `useSunoSongs()` | useState, useEffect, loading states |
+| **lib/** | Simple API clients | `fetchUsers()` | Fetch calls, data mapping |
+| **services/** | Business logic | `userService.getUser()` | Caching, validation, orchestration |
+| **hooks/** | React state | `useUser()` | useState, useEffect, loading states |
 
-## Real Example from This Codebase
+## Example Pattern
 
-### lib/suno.ts (Low-level API client)
+### lib/api.ts (Low-level API client)
 ```typescript
 // Simple fetch, no caching, no complex logic
-export async function fetchAllSunoSongs(
-  username: string,
-  onProgress?: (songs: Song[]) => void
-): Promise<Song[]> {
-  // Paginate through API, return songs
-  // No caching, no validation
+export async function fetchUsers(): Promise<User[]> {
+  const response = await fetch('/api/users');
+  if (!response.ok) throw new Error('Failed to fetch');
+  return response.json();
 }
 ```
 
-### services/sunoService.ts (Business logic with caching)
+### services/userService.ts (Business logic with caching)
 ```typescript
-export const sunoService = {
-  cache: new Map<string, { songs: Song[]; timestamp: number }>(),
+interface CacheEntry<T> {
+  data: T;
+  timestamp: number;
+}
+
+export const userService = {
+  cache: new Map<string, CacheEntry<User[]>>(),
   cacheTimeout: 5 * 60 * 1000, // 5 minutes
 
-  async fetchUserSongs(
-    username: string,
-    onProgress?: (songs: Song[]) => void
-  ): Promise<Song[]> {
+  async getUsers(): Promise<User[]> {
     // Check cache first
-    const cached = this.cache.get(username);
+    const cached = this.cache.get('users');
     if (cached && Date.now() - cached.timestamp < this.cacheTimeout) {
-      return cached.songs; // Return cached, no API call!
+      return cached.data; // Return cached, no API call!
     }
 
     // Call lib function
-    const songs = await fetchAllSunoSongs(username, onProgress);
+    const users = await fetchUsers();
+    
+    // Validate/transform data
+    const validUsers = users.filter(u => u.id && u.email);
     
     // Update cache
-    this.cache.set(username, { songs, timestamp: Date.now() });
+    this.cache.set('users', { 
+      data: validUsers, 
+      timestamp: Date.now() 
+    });
     
-    return songs;
+    return validUsers;
   },
 
-  clearCache(username?: string): void {
-    // Cache management
+  clearCache(): void {
+    this.cache.clear();
   }
 };
 ```
 
-### hooks/useSunoSongs.ts (React integration)
+### hooks/useUsers.ts (React integration)
 ```typescript
-export function useSunoSongs(initialUsername?: string) {
-  const [songs, setSongs] = useState<Song[]>([]);
+export function useUsers() {
+  const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   
-  const loadSongs = useCallback(async (username: string) => {
+  const loadUsers = useCallback(async () => {
     setIsLoading(true);
     try {
       // Call service, not lib!

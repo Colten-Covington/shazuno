@@ -1,151 +1,313 @@
-# Shazuno 🎵
+# Buzz Stack ⚡
 
-A Shazam-like web application for searching and identifying songs from Suno.com. This application allows users to search through a Suno artist's song library by providing lyrics in text or voice, using an intelligent word-overlap matching algorithm.
+A modern, production-ready **Next.js 15** boilerplate with **React 18**, **TypeScript**, and **Tailwind CSS**. Built with best practices, accessibility, and developer experience in mind.
 
-## 🤖 For AI Agents
+Perfect for bootstrapping your next web application quickly without sacrificing quality.
 
-**See [AGENTS.md](AGENTS.md)** for complete agent instructions following the [Agentic AI Foundation](https://agents.md) standard format.
+---
 
-Quick links:
-- [Build & Test Commands](AGENTS.md#build-and-test-commands)
-- [Code Style Guidelines](AGENTS.md#code-style-guidelines)  
-- [Security Considerations](AGENTS.md#security-considerations)
-- [Specialized Agents](.github/agents/README.md)
+## ✨ Features
 
-## Features
+- ⚡ **Next.js 15** - Latest App Router with Server Components
+- ⚛️ **React 18** - Concurrent features and modern hooks
+- 📘 **TypeScript** - Strict mode for type safety
+- 🎨 **Tailwind CSS** - Utility-first CSS with custom configuration
+- ♿ **Accessible** - WCAG 2.2 AA compliant out of the box
+- 🏗️ **Well-Structured** - Organized folder structure with clear separation of concerns
+- 📦 **pnpm** - Fast, disk space efficient package manager
+- 🔧 **ESLint** - Code quality and consistency
+- 🎯 **Production-Ready** - Error boundaries, loading states, and 404 pages included
 
-- 🎤 **Voice Recognition**: Record or speak song lyrics using your microphone with real-time Web Speech API transcription
-- 📝 **Text Search**: Manually enter or paste song lyrics to search
-- 👤 **Live Suno API Integration**: Fetch songs directly from any Suno.com artist's profile
-- 🎯 **Smart Word-Overlap Matching**: Advanced similarity algorithm that matches query words against song metadata
-- 🎨 **Modern UI**: Beautiful glassmorphism gradient design with smooth animations
-- 📱 **Responsive**: Works seamlessly on desktop and mobile devices
-- ⌨️ **Keyboard Shortcuts**: Use Ctrl/Cmd+Enter to quickly submit your search
-- 🔗 **Progressive Loading**: Results update in real-time as songs are fetched from the API
+---
 
-## Getting Started
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- Node.js 18.0 or higher
-- pnpm package manager (preferred) or npm
-- Modern web browser (Chrome or Edge recommended for voice recognition)
+- **Node.js** 18.0 or higher
+- **pnpm** 9.0.0 or higher (recommended) or npm/yarn
 
 ### Installation
 
-1. Clone the repository:
+1. **Clone or use as template:**
 ```bash
-git clone https://github.com/Colten-Covington/shazuno.git
-cd shazuno
+git clone https://github.com/yourusername/buzz-stack.git my-app
+cd my-app
 ```
 
-2. Install dependencies:
+2. **Install dependencies:**
 ```bash
 pnpm install
 ```
 
-3. Run the development server:
+3. **Run development server:**
 ```bash
 pnpm dev
 ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser
+4. **Open your browser:**
+Visit [http://localhost:3000](http://localhost:3000)
 
 ### Building for Production
 
 ```bash
-pnpm build
-pnpm start
+pnpm build    # Build for production
+pnpm start    # Start production server
+pnpm lint     # Run ESLint
 ```
 
-## Usage
+---
 
-1. **Enter a Suno Username**: Type the username of any Suno.com artist whose songs you want to search
-   - The app will automatically fetch their songs from the Suno API
-   - Songs continue loading in the background as you search
+## 📁 Project Structure
 
-2. **Choose Search Method**:
-   - **Text Search**: Type or paste song lyrics into the text area, then click the search button or press Ctrl/Cmd+Enter
-   - **Voice Search**: Click the microphone button and speak the lyrics (requires Chrome, Edge, or Safari)
+```
+buzz-stack/
+├── app/                 # Next.js App Router
+│   ├── layout.tsx      # Root layout with metadata
+│   ├── page.tsx        # Home page
+│   ├── error.tsx       # Error boundary
+│   ├── loading.tsx     # Loading UI
+│   ├── not-found.tsx   # 404 page
+│   └── globals.css     # Global styles
+├── components/          # Reusable React components
+│   ├── Header.tsx
+│   └── GitHubLink.tsx
+├── hooks/              # Custom React hooks
+│   └── useModal.ts     # Example modal hook
+├── lib/                # External API clients and integrations
+├── services/           # Business logic and orchestration
+├── utils/              # Pure utility functions
+├── types/              # TypeScript type definitions
+├── constants/          # App-wide constants
+├── contexts/           # React Context providers
+├── middleware/         # Next.js middleware
+├── public/             # Static assets
+└── docs/               # Documentation
+```
 
-3. **View Results**: Matching songs appear instantly with:
-   - Song title and match percentage
-   - Lyrics preview with highlighted query words
-   - Song artwork
-   - Tag information from song metadata
-   - Click "View Lyrics" to see the full song description/lyrics in a modal
+### Directory Purpose
 
-## How It Works
+- **`/app`** - Next.js 15 App Router pages, layouts, and special files
+- **`/components`** - Reusable UI components with props interfaces
+- **`/hooks`** - Custom React hooks for stateful logic
+- **`/lib`** - Third-party integrations and API clients
+- **`/services`** - Business logic layer with caching and orchestration
+- **`/utils`** - Pure functions and helpers
+- **`/types`** - Shared TypeScript interfaces and types
+- **`/constants`** - Configuration and constant values
+- **`/contexts`** - React Context for global state
+- **`/middleware`** - Next.js Edge middleware
+- **`/public`** - Static files served from root
 
-1. **Client-Side API Integration**: Songs are fetched directly from the Suno API in the browser (no backend processing)
-2. **Progressive Loading**: The app fetches up to 10 pages of songs, stopping after 5 consecutive empty pages
-3. **Deduplication**: Duplicate songs are automatically removed based on song ID
-4. **Real-Time Search**: Results update instantly as you type and as new pages of songs load
-5. **Similarity Matching**: Uses a word-overlap algorithm that:
-   - Scores 1.0 for exact substring matches
-   - Scores 0.9 if all query words appear in the lyrics (in any order)
-   - Scores proportionally for partial matches
-6. **Smart Snippets**: Shows the most relevant 40-word excerpt from song lyrics with highlighted matches
+---
 
-## Future Enhancements
+## 🎨 Customization
 
-- Shazam-style audio fingerprinting (analyze actual audio rather than speech transcription)
-- User authentication for private searches
-- Search history and saved favorites
-- Advanced filtering (by date, tags, genre metadata)
-- Fuzzy matching and semantic search capabilities
-- Result export/sharing functionality
-- Performance optimizations and caching strategies
-- Dark/light theme toggle
+### Update Branding
 
-## Technology Stack
+Edit the header in `components/Header.tsx`:
+```tsx
+<Header 
+  title="Your App Name"
+  subtitle="Your tagline"
+  emoji="🚀"
+/>
+```
 
-- **Framework**: Next.js 15 with App Router
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **Voice Recognition**: Web Speech API (browser-native)
-- **API**: Direct Suno.com API integration (client-side)
-- **State Management**: React Hooks (useState, useEffect)
+Edit metadata in `app/layout.tsx`:
+```tsx
+export const metadata: Metadata = {
+  title: "Your App Name",
+  description: "Your app description",
+  // ... other metadata
+};
+```
 
-## Documentation
+### Configure GitHub Link
 
-Comprehensive documentation is available in the `/docs` directory:
+Update `components/GitHubLink.tsx` or pass props:
+```tsx
+<GitHubLink 
+  repoUrl="https://github.com/yourusername/yourrepo"
+  label="View on GitHub"
+/>
+```
 
-- **[Architecture Documentation](docs/ARCHITECTURE.md)** - System design, data flow, and architectural decisions
-- **[Technology Stack](docs/TECH_STACK.md)** - Detailed information about all technologies, frameworks, and libraries used
-- **[Code Structure](docs/CODE_STRUCTURE.md)** - Complete breakdown of the codebase organization and file purposes
-- **[Development Guide](docs/DEVELOPMENT.md)** - Setup instructions, coding standards, and best practices
-- **[Contributing Guidelines](CONTRIBUTING.md)** - How to contribute to the project
-- **[Security Documentation](SECURITY.md)** - Security practices and vulnerability remediation
-- **[Implementation Summary](IMPLEMENTATION.md)** - Feature overview and testing results
+### Styling
 
-### For Developers & AI Agents
+- **Tailwind Config**: Edit `tailwind.config.ts` for theme customization
+- **Global Styles**: Add CSS to `app/globals.css`
+- **Gradient Background**: Modify gradient in `app/page.tsx`
 
-- **[GitHub Copilot Instructions](.github/copilot-instructions.md)** - Guidelines for GitHub Copilot and other AI coding assistants
-- **[VS Code Settings](.vscode/settings.json)** - Recommended workspace settings
-- **[Code Snippets](.vscode/shazuno.code-snippets)** - Common code patterns and templates
+---
 
-## Browser Compatibility
+## 📚 Documentation
 
-- **Voice Recognition**: Chrome, Edge, and Safari (most reliable)
-- **Text Search**: All modern browsers (Chrome, Firefox, Safari, Edge)
-- **Best Experience**: Chrome or Edge recommended for voice input
+### For Developers
 
-## Contributing
+- **[AGENTS.md](AGENTS.md)** - Architecture, code style, and best practices (AI-friendly format)
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Contribution guidelines
+- **[docs/](docs/)** - Comprehensive documentation
+  - Architecture patterns
+  - Code structure guide
+  - Development best practices
+  - Next.js and Vercel features
 
-Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) to get started.
+### For AI Coding Assistants
 
-Key resources for contributors:
-1. Read the [Architecture Documentation](docs/ARCHITECTURE.md) to understand the system
-2. Follow the [Development Guide](docs/DEVELOPMENT.md) for setup and standards
-3. Check the [Technology Stack](docs/TECH_STACK.md) for framework details
-4. Review [GitHub Copilot Instructions](.github/copilot-instructions.md) for coding patterns
+This project follows the [Agentic AI Foundation](https://agents.md) standard:
+- **[AGENTS.md](AGENTS.md)** - Main instructions for AI agents
+- **[.github/copilot-instructions.md](.github/copilot-instructions.md)** - GitHub Copilot specific guidance
+- Directory-specific `AGENTS.md` files for focused context
 
-## License
+---
+
+## 🏗️ Architecture
+
+### Layered Architecture
+
+```
+UI Layer (Components) 
+    ↓
+React Integration (Hooks)
+    ↓
+Business Logic (Services)
+    ↓
+External APIs (Lib)
+```
+
+### Key Patterns
+
+- **Server Components by default** - Use `'use client'` only when needed
+- **Type Safety** - Strict TypeScript with explicit types
+- **Accessibility First** - Semantic HTML, ARIA attributes, keyboard navigation
+- **Performance** - Code splitting, lazy loading, optimized images
+- **Separation of Concerns** - Clear boundaries between layers
+
+---
+
+## 🛠️ Tech Stack
+
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| Next.js | 15.x | React framework with App Router |
+| React | 18.x | UI library with concurrent features |
+| TypeScript | 5.x | Type-safe JavaScript |
+| Tailwind CSS | 3.4.x | Utility-first CSS framework |
+| pnpm | 9.x | Fast package manager |
+| ESLint | 8.x | Code linting |
+
+---
+
+## 🚦 What's Included
+
+### Next.js Features
+
+- ✅ App Router with layouts
+- ✅ Server Components by default
+- ✅ Error boundaries (`error.tsx`)
+- ✅ Loading states (`loading.tsx`)
+- ✅ 404 page (`not-found.tsx`)
+- ✅ Metadata API for SEO
+- ✅ Viewport configuration
+
+### UI/UX Features
+
+- ✅ Responsive design (mobile-first)
+- ✅ Keyboard navigation
+- ✅ Screen reader support
+- ✅ Focus indicators
+- ✅ Skip to main content link
+- ✅ Beautiful gradient background
+- ✅ Glassmorphism effects
+
+### Developer Experience
+
+- ✅ TypeScript strict mode
+- ✅ ESLint configuration
+- ✅ Clear project structure
+- ✅ Example components and hooks
+- ✅ Comprehensive documentation
+- ✅ AI-friendly AGENTS.md files
+
+---
+
+## 🔨 Building Your App
+
+### Step 1: Customize the Home Page
+
+Edit `app/page.tsx` to create your landing page or dashboard.
+
+### Step 2: Add Components
+
+Create reusable components in `/components`:
+```tsx
+// components/Button.tsx
+interface ButtonProps {
+  label: string;
+  onClick: () => void;
+}
+
+export default function Button({ label, onClick }: ButtonProps) {
+  return (
+    <button 
+      onClick={onClick}
+      className="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded"
+    >
+      {label}
+    </button>
+  );
+}
+```
+
+### Step 3: Add Routes
+
+Create new pages by adding files to `/app`:
+```
+app/
+├── page.tsx           # Home page (/)
+├── about/
+│   └── page.tsx      # About page (/about)
+└── dashboard/
+    └── page.tsx      # Dashboard page (/dashboard)
+```
+
+### Step 4: Add Business Logic
+
+1. **API Clients** (`/lib`) - External API integrations
+2. **Services** (`/services`) - Business logic with caching
+3. **Hooks** (`/hooks`) - React state management
+4. **Utils** (`/utils`) - Pure helper functions
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+---
+
+## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Acknowledgments
+---
 
-- Inspired by Shazam's song recognition technology
-- Built for the Suno.com music generation platform
+## 🙏 Acknowledgments
+
+- Built with [Next.js](https://nextjs.org/)
+- Styled with [Tailwind CSS](https://tailwindcss.com/)
+- Icons from emoji unicode
+- Inspired by modern web development best practices
+
+---
+
+## 🆘 Need Help?
+
+- 📖 Read the [documentation](docs/)
+- 🐛 [Open an issue](https://github.com/yourusername/buzz-stack/issues)
+- 💬 Start a [discussion](https://github.com/yourusername/buzz-stack/discussions)
+
+---
+
+**Happy coding! ⚡** Start building amazing things with Buzz Stack.

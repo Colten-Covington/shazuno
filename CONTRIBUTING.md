@@ -1,6 +1,6 @@
-# Contributing to Shazuno
+# Contributing to Buzz Stack
 
-Thank you for your interest in contributing to Shazuno! This document provides guidelines and instructions for contributing to the project.
+Thank you for your interest in contributing to Buzz Stack! This document provides guidelines and instructions for contributing to the project.
 
 ## Table of Contents
 
