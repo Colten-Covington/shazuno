@@ -31,7 +31,7 @@ function TextSearchComponent({ onSearch, isSearching, songsLoaded }: TextSearchP
     <form ref={formRef} onSubmit={handleSubmit} className="space-y-4" noValidate>
       <div>
         <label htmlFor="lyrics-input" className="block text-white text-sm font-bold mb-2">
-          Enter Song Lyrics: <span className="inline-block text-gray-400 text-xs ml-2" aria-label="Keyboard shortcut">(Press Ctrl+Enter to search)</span>
+          Enter Song Lyrics: <span className="inline-block text-gray-400 text-xs ml-2">(Press Ctrl+Enter to search)</span>
         </label>
         <textarea
           ref={textareaRef}

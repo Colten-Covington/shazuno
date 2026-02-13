@@ -112,7 +112,7 @@ const SongResultItem = memo(function SongResultItem({ song, query, onLyricsClick
             {song.title}
           </h3>
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-sm text-green-300 font-semibold" aria-label={`${Math.round(song.matchScore * 100)} percent match`}>
+            <span className="text-sm text-green-300 font-semibold">
               {Math.round(song.matchScore * 100)}% Match
             </span>
             <span className="text-gray-400" aria-hidden="true">•</span>
@@ -120,17 +120,16 @@ const SongResultItem = memo(function SongResultItem({ song, query, onLyricsClick
           </div>
 
           {song.tags && (
-            <div className="flex flex-wrap gap-2 mb-3" role="list" aria-label="Song tags">
+            <ul className="flex flex-wrap gap-2 mb-3" aria-label="Song tags">
               {song.tags.split(',').map((tag, index) => (
-                <span
+                <li
                   key={index}
-                  role="listitem"
                   className="inline-block bg-purple-500/70 text-white text-xs px-2 py-1 rounded-full"
                 >
                   {tag.trim()}
-                </span>
+                </li>
               ))}
-            </div>
+            </ul>
           )}
           
           {song.lyrics && (

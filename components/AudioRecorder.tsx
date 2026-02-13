@@ -131,7 +131,7 @@ export default function AudioRecorder({ onSearch, isSearching, songsLoaded = 0 }
           <label htmlFor="detected-lyrics" className="block text-white text-sm font-bold mb-2">
             Detected Lyrics:
           </label>
-          <div id="detected-lyrics" className="bg-black/30 text-white p-3 rounded min-h-[100px] whitespace-pre-wrap" role="log" aria-live="polite">
+          <div id="detected-lyrics" className="bg-black/30 text-white p-3 rounded min-h-[100px] whitespace-pre-wrap" role="log">
             {transcript}
           </div>
           <button
