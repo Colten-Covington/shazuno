@@ -94,6 +94,7 @@ const SongResultItem = memo(function SongResultItem({ song, query, onLyricsClick
   return (
     <article
       className="bg-white/20 rounded-lg p-4 hover:bg-white/30 transition-all"
+      aria-label={`Song result: ${song.title}`}
     >
       <div className="flex items-start gap-4">
         {song.imageUrl && (

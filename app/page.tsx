@@ -243,7 +243,7 @@ export default function Home() {
                 <span aria-hidden="true">✕</span> Close
               </button>
             </div>
-            <div className="bg-black/40 rounded-lg p-4 overflow-y-auto whitespace-pre-wrap text-sm text-gray-200" role="document" tabIndex={0} aria-label="Song lyrics content">
+            <div className="bg-black/40 rounded-lg p-4 overflow-y-auto whitespace-pre-wrap text-sm text-gray-200" role="document" aria-label="Song lyrics content">
               {(activeSong.lyrics || '')
                 .replace(/\r\n/g, '\n')
                 .replace(/\/n/g, '\n')}

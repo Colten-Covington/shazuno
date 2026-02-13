@@ -120,7 +120,7 @@ export default function AudioRecorder({ onSearch, isSearching, songsLoaded = 0 }
       </div>
 
       {error && (
-        <div className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-3 rounded-lg" role="alert" aria-live="assertive">
+        <div className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-3 rounded-lg" role="alert">
           <span className="sr-only">Error:</span>
           {error}
         </div>

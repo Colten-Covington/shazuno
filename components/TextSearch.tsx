@@ -44,7 +44,7 @@ function TextSearchComponent({ onSearch, isSearching, songsLoaded }: TextSearchP
           aria-label="Song lyrics input"
           aria-describedby="lyrics-hint"
         />
-        <p id="lyrics-hint" className="sr-only">Enter or paste the lyrics of a song you want to find. Press Ctrl+Enter or click the search button to start searching.</p>
+        <p id="lyrics-hint" className="sr-only">Enter or paste the lyrics of a song you want to find. Press Ctrl+Enter or use the search button to start searching.</p>
       </div>
       <button
         type="submit"
