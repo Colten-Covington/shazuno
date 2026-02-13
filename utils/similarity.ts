@@ -23,6 +23,10 @@ export function calculateSimilarity(str1: string, str2: string): number {
     return 0;
   }
 
+  if (s1.includes(s2)) {
+    return 1.0;
+  }
+
   let matchingWords = 0;
   for (const word of queryWords) {
     if (lyricsWords.has(word)) {
@@ -30,5 +34,11 @@ export function calculateSimilarity(str1: string, str2: string): number {
     }
   }
 
-  return matchingWords / queryWords.length;
+  const ratio = matchingWords / queryWords.length;
+
+  if (ratio === 1) {
+    return 0.9;
+  }
+
+  return ratio;
 }

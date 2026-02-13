@@ -13,6 +13,7 @@ export default function Home() {
   const [isSearching, setIsSearching] = useState(false);
   const [isLoadingSongs, setIsLoadingSongs] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeSong, setActiveSong] = useState<Song | null>(null);
   const fetchSunoPage = async (username: string, page: number) => {
     const url = `https://studio-api.prod.suno.com/api/profiles/${username}?clips_sort_by=created_at&playlists_sort_by=created_at&page=${page}`;
     const response = await fetch(url, {
@@ -183,10 +184,44 @@ export default function Home() {
 
           {/* Results */}
           {searchResults.length > 0 && (
-            <SongResults results={searchResults} />
+            <SongResults results={searchResults} query={searchQuery} onLyricsClick={setActiveSong} />
           )}
         </div>
       </div>
+
+      {activeSong && (
+        <div
+          className="fixed top-0 left-0 w-screen h-screen bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setActiveSong(null)}
+        >
+          <div
+            className="bg-slate-900 text-white rounded-lg w-full max-w-3xl h-[80vh] p-6 shadow-2xl flex flex-col"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-4 mb-4">
+              <div>
+                <h3 className="text-2xl font-bold">{activeSong.title}</h3>
+                <p className="text-sm text-gray-400">Full lyrics</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveSong(null)}
+                className="text-gray-300 hover:text-white"
+                aria-label="Close lyrics modal"
+              >
+                Close
+              </button>
+            </div>
+            <div className="bg-black/40 rounded-lg p-4 overflow-y-auto whitespace-pre-wrap text-sm text-gray-200">
+              {(activeSong.lyrics || '')
+                .replace(/\r\n/g, '\n')
+                .replace(/\/n/g, '\n')}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
