@@ -50,7 +50,7 @@ export default function Home() {
           sunoUsername,
           (progressSongs) => {
             // Update UI with progressive results
-            setAllSongs([...progressSongs]);
+            setAllSongs(progressSongs);
           }
         );
 

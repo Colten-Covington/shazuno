@@ -31,6 +31,7 @@ export function mapClipToSong(clip: SunoClip): Song {
   return {
     id: clip.id,
     title: clip.title || 'Untitled',
+    // Try prompt first (user-provided), fall back to gpt_description_prompt (AI-generated)
     lyrics: clip.metadata?.prompt || clip.metadata?.gpt_description_prompt || '',
     audioUrl: clip.audio_url,
     imageUrl: clip.image_large_url || clip.image_url,
@@ -41,7 +42,7 @@ export function mapClipToSong(clip: SunoClip): Song {
 
 /**
  * Fetches all songs from Suno API for a given username
- * Handles pagination and deduplication using a Set
+ * Handles pagination and deduplication using a Map
  * @param username - The Suno username to fetch songs for
  * @param onProgress - Optional callback to report progress as songs are loaded
  * @returns An array of unique Song objects
@@ -52,13 +53,15 @@ export async function fetchAllSunoSongs(
 ): Promise<Song[]> {
   const normalizedUsername = username.trim().toLowerCase();
   let page = 0;
+  // Stop after 10 consecutive empty pages to avoid infinite loops while allowing gaps
+  const MAX_CONSECUTIVE_EMPTY_PAGES = 10;
   let emptyPages = 0;
   const songsMap = new Map<string, Song>();
 
-  while (emptyPages < 10) {
+  while (emptyPages < MAX_CONSECUTIVE_EMPTY_PAGES) {
     const data = await fetchSunoPage(normalizedUsername, page);
 
-    if (!data || !Object.prototype.hasOwnProperty.call(data, 'clips')) {
+    if (!data || !('clips' in data)) {
       emptyPages += 1;
       page += 1;
       continue;
@@ -76,11 +79,11 @@ export async function fetchAllSunoSongs(
     page += 1;
 
     // Add new songs to the Map (automatically handles deduplication by id)
-    pageClips.forEach((clip: SunoClip) => {
-      if (clip.id && !songsMap.has(clip.id)) {
+    pageClips
+      .filter((clip: SunoClip) => clip.id)
+      .forEach((clip: SunoClip) => {
         songsMap.set(clip.id, mapClipToSong(clip));
-      }
-    });
+      });
 
     // Report progress with current songs
     if (onProgress) {
