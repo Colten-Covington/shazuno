@@ -4,9 +4,12 @@
 
 ## What This Directory Contains
 
-- **AudioRecorder.tsx** - Voice input using Web Speech API
-- **TextSearch.tsx** - Text input with keyboard shortcuts
-- **SongResults.tsx** - Search results display with cards
+Reusable React components for your application UI. Currently includes:
+
+- **Header.tsx** - Configurable app header with title and subtitle
+- **GitHubLink.tsx** - Configurable GitHub repository link
+
+Add your own components here as you build features.
 
 ## Component Patterns
 
@@ -33,7 +36,7 @@ export default function Component({ prop, onAction }: ComponentProps) {
 ```
 
 ### Naming Convention
-- PascalCase: `AudioRecorder.tsx`
+- PascalCase: `MyComponent.tsx`
 - Default export for components
 - Named exports for utilities/types
 
@@ -49,7 +52,17 @@ export default function Component({ prop, onAction }: ComponentProps) {
 - Keyboard navigation support
 - Focus indicators with `focus:ring-2`
 
+## When to Use 'use client'
+
+Only add `'use client'` when your component:
+- Uses React hooks (useState, useEffect, etc.)
+- Uses browser APIs (window, document, localStorage)
+- Handles user interactions (onClick, onChange)
+- Uses Context consumers
+
+Keep Server Components by default for better performance.
+
 ## References
 
 - [Root AGENTS.md](/AGENTS.md) - Code style guidelines
-- [React Patterns](.github/skills/react-patterns.md)
+- [Next.js Components](https://nextjs.org/docs/app/building-your-application/rendering)

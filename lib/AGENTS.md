@@ -4,7 +4,7 @@
 
 ## What This Directory Contains
 
-- **suno.ts** - Suno API client with pagination and deduplication
+External API clients and third-party integrations. Currently empty - add your API clients here as needed.
 
 ## Architecture Position
 
@@ -22,36 +22,32 @@ Component → Hook → Service → Lib → API
 |--------|------|-----------|
 | **Purpose** | Simple API client | Business logic layer |
 | **Caching** | No caching | Yes, with TTL |
-| **Error handling** | Basic (return null) | Enhanced (better messages) |
+| **Error handling** | Basic (throw/return null) | Enhanced (better messages) |
 | **State** | Stateless | Can be stateful |
 | **Consumed by** | Services | Hooks |
-| **Example** | `fetchSunoPage()` | `sunoService.fetchUserSongs()` |
+| **Example** | `fetchUsers()` | `userService.getUser()` |
 
-## Real Example from This Codebase
+## Example Pattern
 
-### lib/suno.ts
+### lib/api.ts
 ```typescript
 // Low-level API client - no caching, no complex logic
-export async function fetchSunoPage(
-  username: string, 
-  page: number
-): Promise<SunoProfile | null> {
-  const url = `${SUNO_API_BASE_URL}/api/profiles/${username}?page=${page}`;
-  const response = await fetch(url);
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+
+export async function fetchUser(id: string): Promise<User | null> {
+  const response = await fetch(`${API_BASE}/users/${id}`);
   
   if (!response.ok) return null; // Simple error handling
   
   return response.json();
 }
 
-export async function fetchAllSunoSongs(
-  username: string,
-  onProgress?: (songs: Song[]) => void
-): Promise<Song[]> {
-  // Handles pagination
-  // Handles deduplication
-  // Calls onProgress for progressive loading
-  // NO CACHING - that's the service layer's job
+export async function fetchAllUsers(): Promise<User[]> {
+  const response = await fetch(`${API_BASE}/users`);
+  
+  if (!response.ok) throw new Error('Failed to fetch users');
+  
+  return response.json();
 }
 ```
 

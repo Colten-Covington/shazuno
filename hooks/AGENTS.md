@@ -4,7 +4,11 @@
 
 ## What This Directory Contains
 
-Custom hooks that encapsulate reusable React logic. Hooks should **consume services, not lib directly**.
+Custom hooks that encapsulate reusable React logic. Currently includes:
+
+- **useModal.ts** - Generic modal state management hook
+
+Add your custom hooks here as you build features.
 
 ## Architecture Layering ⚠️
 
@@ -13,25 +17,37 @@ Custom hooks that encapsulate reusable React logic. Hooks should **consume servi
 Hook → Service → Lib → API
 ```
 
-**Example from this codebase:**
+Hooks should call services (which provide caching, error handling, business logic), not lib directly.
+
+**Example pattern:**
 ```typescript
 // ✅ CORRECT: Hook uses service layer
-import { sunoService } from '@/services';
+import { myService } from '@/services';
 
-export function useSunoSongs(initialUsername?: string) {
-  // Hook calls service, which provides caching
-  const songs = await sunoService.fetchUserSongs(username, onProgress);
+export function useMyData(id: string) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  
+  useEffect(() => {
+    setLoading(true);
+    // Service provides caching, validation, error handling
+    myService.getData(id)
+      .then(setData)
+      .finally(() => setLoading(false));
+  }, [id]);
+  
+  return { data, loading };
 }
 ```
 
 **Anti-pattern:**
 ```typescript
 // ❌ WRONG: Hook bypasses service layer
-import { fetchAllSunoSongs } from '@/lib/suno';
+import { fetchData } from '@/lib/api';
 
-export function useSunoSongs() {
-  // Missing caching, error handling from service
-  const songs = await fetchAllSunoSongs(username);
+export function useMyData(id: string) {
+  // Missing caching, error handling from service layer
+  const data = await fetchData(id);
 }
 ```
 
